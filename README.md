@@ -1,7 +1,25 @@
-# Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN
-# Build ionic-electron 
-# webpack configuration for web app
-# ionic 6.19
-# electron build
+<div align="center">
 
+# Tutored Project S6 - Management of Law Firm
+  
+</div>
 
+### 🚀 Group Members
+
+- BAREL Antoine
+- BONAZZI Pierre-Jean
+- GIRON Maxence
+- HOFFMANN Eric
+
+#
+
+### ✨ Versions
+
+- Ionic : 6.19
+
+#
+
+### 🧩 Implemented Tasks
+
+- Ionic-Electron build 
+- Webpack configurations for web app
