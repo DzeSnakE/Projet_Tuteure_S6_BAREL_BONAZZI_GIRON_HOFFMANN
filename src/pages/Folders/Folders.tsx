@@ -1,8 +1,9 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { useParams } from 'react-router';
-import ExploreContainer from '../components/ExploreContainer';
+import ExploreContainer from '../../components/ExploreContainer';
+import './Folder.css';
 
-const Page: React.FC = () => {
+const Folder: React.FC = () => {
 
   const { name } = useParams<{ name: string; }>();
 
@@ -29,4 +30,4 @@ const Page: React.FC = () => {
   );
 };
 
-export default Page;
+export default Folder;
