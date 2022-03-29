@@ -45,8 +45,8 @@ const appPages: AppPage[] = [
     mdIcon: homeSharp
   },
   {
-    title: 'Client',
-    url: '/page/Client',
+    title: 'Clients',
+    url: '/page/Clients',
     iosIcon: personOutline,
     mdIcon: personSharp
   },
@@ -64,7 +64,7 @@ const Menu: React.FC = () => {
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
-        <img src="../../public/assets/img/balance.png"/>
+        <img src="../../public/assets/img/balance.png" alt="Balance image"/>
         <IonList id="home-list">
           {appPages.map((appPage, index) => {
             return (<IonButtons slot="start">

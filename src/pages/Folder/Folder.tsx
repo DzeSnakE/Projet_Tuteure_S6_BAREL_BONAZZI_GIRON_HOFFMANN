@@ -3,9 +3,6 @@ import { useParams } from 'react-router';
 import './Folder.css';
 
 const Folder: React.FC = () => {
-
-  const { name } = useParams<{ name: string; }>();
-
   return (
     <IonPage>
       <IonHeader>
@@ -13,14 +10,14 @@ const Folder: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>{name}</IonTitle>
+          <IonTitle>Dossiers</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">{name}</IonTitle>
+            
           </IonToolbar>
         </IonHeader>
       </IonContent>
