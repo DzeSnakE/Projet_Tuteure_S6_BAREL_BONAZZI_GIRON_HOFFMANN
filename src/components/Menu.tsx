@@ -1,34 +1,24 @@
+import React from "react";
+import { useLocation } from 'react-router-dom';
+
 import {
   IonContent,
   IonIcon,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
   IonButtons,
 } from '@ionic/react';
 
-import { useLocation } from 'react-router-dom';
 import {
-  archiveOutline,
-  archiveSharp,
-  bookmarkOutline, folderOutline, folderSharp,
-  heartOutline,
-  heartSharp,
   homeOutline, homeSharp,
-  mailOutline,
-  mailSharp,
-  paperPlaneOutline,
-  paperPlaneSharp, personOutline, personSharp,
-  trashOutline,
-  trashSharp,
-  warningOutline,
-  warningSharp
+  personOutline, personSharp,
+  folderOutline, folderSharp
 } from 'ionicons/icons';
+
 import './Menu.css';
-import React from "react";
 
 interface AppPage {
   url: string;
@@ -74,7 +64,7 @@ const Menu: React.FC = () => {
                   <IonLabel>{appPage.title}</IonLabel>
                 </IonItem>
               </IonMenuToggle>
-                </IonButtons>
+              </IonButtons>
             );
           })}
         </IonList>
