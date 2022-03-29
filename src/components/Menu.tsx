@@ -45,8 +45,8 @@ const appPages: AppPage[] = [
     mdIcon: homeSharp
   },
   {
-    title: 'Clients',
-    url: '/page/Clients',
+    title: 'Client',
+    url: '/page/Client',
     iosIcon: personOutline,
     mdIcon: personSharp
   },
