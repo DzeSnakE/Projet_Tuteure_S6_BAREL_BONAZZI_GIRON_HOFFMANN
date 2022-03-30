@@ -1,7 +1,7 @@
-# Awesome Project Build with TypeORM
+# Express server for Back-End
 
-Steps to run this project:
+Run `yarn start` to launch the back-end server
 
-1. Run `npm i` command
-2. Setup database settings inside `data-source.ts` file
-3. Run `npm start` command
+Enjoy !
+
+Pierre-Jean
