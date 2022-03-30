@@ -1,14 +1,24 @@
-import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import React, { useState } from 'react';
+import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
+  IonSearchbar, IonButton, IonModal } from '@ionic/react';
 
 import {
-  searchOutline, searchSharp,
+  eyeOutline, eyeSharp,
   createOutline, createSharp,
-  trashOutline, trashSharp
+  trashOutline, trashSharp,
+  closeOutline, closeSharp
 } from 'ionicons/icons';
 
 import './Client.css';
 
+interface SearchbarChangeEventDetail {
+  value?: string;
+}
+
 const Client: React.FC = () => {
+  const [searchClient, setSearchClient] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <IonPage>
       <IonHeader>
@@ -22,12 +32,8 @@ const Client: React.FC = () => {
 
       <IonContent className="ion-padding">
         <h6> Ici sont répertoriés nos différents Clients </h6>
-
-        <div className="searchBox">
-          <IonIcon slot="start" id="searchIcon" ios={searchOutline} md={searchSharp} font-size="30px" />
-          <input type="text" id="searchClient" name="searchClient" placeholder="Rechercher un Client ..."></input>
-        </div>
-
+        <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
+      
         <table>
           <thead>
             <tr>
@@ -41,19 +47,29 @@ const Client: React.FC = () => {
               <td> </td>
               <td> </td>
               <td> 
-                <button id="createButton"><IonIcon slot="start" id="createIcon" ios={createOutline} md={createSharp} font-size="30px" /></button> 
-                <button id="trashButton"><IonIcon slot="start" id="trashIcon" ios={trashOutline} md={trashSharp} font-size="30px" /></button>
+                <IonButton onClick={() => setShowModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
+                <IonButton id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>
               </td>
             </tr>
           </tbody>
         </table> 
 
+        <IonModal isOpen={showModal}>
+          <IonContent>
+            <IonButton id="closeModal" onClick={() => setShowModal(false)}>
+              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
+            </IonButton>
+            <h2>TADAAAA</h2>
+          </IonContent>
+        </IonModal>
+
         <div className="pagination">
-          <a href="#">Previous</a>
+          <a href="#">Précédent</a>
           <a href="#" className="active">1</a>
           <a href="#">2</a>
           <a href="#">3</a>
-          <a href="#">Next</a>
+          <a href="#">Suivant</a>
         </div>
       </IonContent>
     </IonPage>
