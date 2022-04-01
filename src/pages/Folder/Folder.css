@@ -1,0 +1,102 @@
+h6, #sortByFolder, #searchBar {
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border: 2px solid #3880ff;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px;
+}
+
+thead {
+    border: 2px solid #3880ff;
+    background: #3880ff;
+    color: azure;
+    padding: 8px;
+}
+
+th {
+    padding: 8px;
+}
+
+td {
+    border: 2px solid #3880ff;
+    padding: 8px;
+}
+
+#headCode {
+    width: 15%;
+    border-right: 2px solid azure;
+}
+
+#headStatut {
+    width: 15%;
+    border-right: 2px solid azure;
+}
+
+#headClients {
+    width: 50%;
+    border-right: 2px solid azure;
+}
+
+#headActions {
+    width: 20%;
+}
+
+#closeModal {
+    margin: 15px;
+    float: right;
+}
+
+.titleModal {
+    margin: 15px;
+}
+
+.modalButtons {
+    float: right;
+    margin: 10px;
+}
+
+.formModal {
+    margin-top: 20px;
+}
+
+#btnSubmit {
+    float: right;
+    margin: 20px;
+}
+
+#btnNewFolder, #btnRefresh {
+    margin-top: 20px;
+}
+
+.pagination {
+    text-align: center;
+    float: right;
+    display: block;
+    margin-top: 20px;
+    right: 10px;
+}
+
+.pagination a {
+    color: rgb(53, 53, 53);
+    float: left;
+    padding: 8px 12px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+  
+.pagination a.active {
+    background-color: #3880ff;
+    color: azure;
+    border: 1px solid #3880ff;
+}
+  
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}

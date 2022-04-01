@@ -4,7 +4,7 @@ h6, #searchBar {
 
 table {
     width: 100%;
-    border: 2px solid rgb(53, 53, 53);
+    border: 2px solid #3880ff;
     border-collapse: collapse;
     text-align: center;
     margin-top: 15px;
@@ -12,8 +12,8 @@ table {
 }
 
 thead {
-    border: 2px solid rgb(53, 53, 53);
-    background: rgb(53, 53, 53);
+    border: 2px solid #3880ff;
+    background: #3880ff;
     color: azure;
     padding: 8px;
 }
@@ -23,27 +23,49 @@ th {
 }
 
 td {
-    border: 2px solid rgb(53, 53, 53);
+    border: 2px solid #3880ff;
     padding: 8px;
 }
 
-#name {
+#headName {
     width: 35%;
     border-right: 2px solid azure;
 }
 
-#affairs {
+#headAffairs {
     width: 40%;
     border-right: 2px solid azure;
 }
 
-#actions {
+#headActions {
     width: 25%;
 }
 
 #closeModal {
     margin: 15px;
     float: right;
+}
+
+.titleModal {
+    margin: 15px;
+}
+
+.modalButtons {
+    float: right;
+    margin: 10px;
+}
+
+.formModal {
+    margin-top: 20px;
+}
+
+#btnSubmit {
+    float: right;
+    margin: 20px;
+}
+
+#btnNewClient, #btnRefresh {
+    margin-top: 20px;
 }
 
 .pagination {
@@ -65,9 +87,9 @@ td {
 }
   
 .pagination a.active {
-    background-color: #6c9fe2;
+    background-color: #3880ff;
     color: azure;
-    border: 1px solid #6c9fe2;
+    border: 1px solid #3880ff;
 }
   
 .pagination a:hover:not(.active) {
