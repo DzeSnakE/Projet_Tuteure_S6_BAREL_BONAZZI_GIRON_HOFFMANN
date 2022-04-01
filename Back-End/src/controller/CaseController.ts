@@ -22,4 +22,10 @@ export class CaseController {
     let caseToRemove = await this.caseRepository.findOne(request.params.id);
     await this.caseRepository.remove(caseToRemove);
   }
+
+  async update(request: Request, response: Response, next: NextFunction) {
+    await this.caseRepository.findOne(request.params.id);
+    await this.caseRepository.update(request.params.id, request.body);
+    return this.caseRepository.findOne(request.params.id);
+  }
 }

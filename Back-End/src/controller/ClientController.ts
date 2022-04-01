@@ -22,4 +22,10 @@ export class ClientController {
         let clientToRemove = await this.clientRepository.findOne(request.params.id);
         await this.clientRepository.remove(clientToRemove);
     }
+
+    async update(request: Request, response: Response, next: NextFunction) {
+        await this.clientRepository.findOne(request.params.id);
+        await this.clientRepository.update(request.params.id, request.body);
+        return this.clientRepository.findOne(request.params.id);
+    }
 }

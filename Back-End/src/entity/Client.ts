@@ -16,10 +16,10 @@ export class Client {
    @Column()
    address: string;
 
-    @Column()
+    @Column({nullable: true})
     birthDate: Date;
 
-    @Column()
+    @Column({nullable: true})
     createdAt: Date;
 
    @ManyToMany(type=>Case, Case=> Case.clients)
