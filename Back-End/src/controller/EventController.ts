@@ -22,4 +22,10 @@ export class EventController {
         let eventToRemove = await this.eventRepository.findOne(request.params.id);
         await this.eventRepository.remove(eventToRemove);
     }
+
+    async update(request: Request, response: Response, next: NextFunction) {
+        await this.eventRepository.findOne(request.params.id);
+        await this.eventRepository.update(request.params.id, request.body);
+        return this.eventRepository.findOne(request.params.id);
+    }
 }

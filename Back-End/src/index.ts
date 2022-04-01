@@ -19,7 +19,6 @@ createConnection().then(async connection => {
 
     app.use(bodyParser.json());
 
-    // register express routes from defined application
      Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
             const result = (new (route.controller as any))[route.action](req, res, next);
@@ -31,15 +30,9 @@ createConnection().then(async connection => {
         });
     });
 
-// setup express app here
-// ...
-
-// start express server
-
 
     app.listen(3000);
 
-// insert new users for test
 
     const client1 = new Client();
     client1.firstName = "Mickael";
@@ -70,7 +63,6 @@ createConnection().then(async connection => {
     case2.endDate = new Date();
     case2.clients = [client1];
     await connection.manager.save(case2);
-    console.log("Affaire1 ajoutée avec succès!");
 
 
     const event1 = new Event();
@@ -97,7 +89,6 @@ createConnection().then(async connection => {
     event4.time = 5;
     event4.cases = case2;
     await connection.manager.save(event4);
-
 
 
     console.log("Express server has started on port 3000. Open http://localhost:3000/client to see results");

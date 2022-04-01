@@ -22,6 +22,11 @@ export const Routes = [{
     route: "/client/:id",
     controller: ClientController,
     action: "remove"
+},{
+    method: "put",
+    route: "/client/:id",
+    controller: ClientController,
+    action: "update"
 },
 
 
@@ -44,7 +49,12 @@ export const Routes = [{
         route: "/case/:id",
         controller: CaseController,
         action: "remove"
-},
+},{
+        method: "put",
+        route: "/case/:id",
+        controller: CaseController,
+        action: "update"
+    },
 
 
     {method: "get",
@@ -66,4 +76,10 @@ export const Routes = [{
     route: "/event/:id",
     controller: EventController,
     action: "remove"
-}]
+},
+    {
+        method: "put",
+        route: "/event/:id",
+        controller: EventController,
+        action: "update"
+    },]
