@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
@@ -19,15 +20,38 @@ interface SearchbarChangeEventDetail {
 
 const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
-  const [data, setData]=useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const getData=()=>{
-    fetch('http://localhost:5000/api/client')
-    .then(res=>res.json())
-    .then(data=>{
-      setData(data);
+  const [APIData, setAPIData] = useState<any[]>([]);
+    useEffect(() => {
+        axios.get(`http://localhost:3000/client`)
+            .then((response) => {
+                console.log(response.data)
+                setAPIData(response.data);
+            })
+    }, []);
+
+  const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
+      let { id, firstName, lastName, address, birthDate} = data;
+      localStorage.setItem('ID', id);
+      localStorage.setItem('First Name', firstName);
+      localStorage.setItem('Last Name', lastName);
+      localStorage.setItem('Address', address);
+      localStorage.setItem('birthDate', birthDate);
+  }
+
+  const getData = () => {
+      axios.get(`http://localhost:3000/client`)
+          .then((getData) => {
+              setAPIData(getData.data);
+          })
+  }
+
+  const onDelete = (id: any) => {
+    axios.delete(`http://localhost:3000/client/${id}`)
+    .then(() => {
+        getData();
     })
   }
 
@@ -45,20 +69,7 @@ const Client: React.FC = () => {
 
   const fields = [
     {
-      label: "Filename",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "filename",
-        type: "text",
-        placeholder: "fichier de sauvegarde"
-      }
-    },
-    {
-      label: "Firstname",
+      label: "Prénom",
       required: true,
       requiredOptions: {
         minLength: 2,
@@ -71,7 +82,7 @@ const Client: React.FC = () => {
       }
     },
     {
-      label: "Lastname",
+      label: "Nom",
       required: true,
       requiredOptions: {
         minLength: 2,
@@ -84,7 +95,7 @@ const Client: React.FC = () => {
       }
     },
     {
-      label: "Birthdate",
+      label: "Date de naissance",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
@@ -97,7 +108,7 @@ const Client: React.FC = () => {
       }
     },
     {
-      label: "Address",
+      label: "Adresse",
       required: true,
       requiredOptions: {
         minLength: 10,
@@ -112,37 +123,37 @@ const Client: React.FC = () => {
   ];
   
   console.log(errors);
-  let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
+  // let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
-  const onSubmit = (data: any, e:any) => {
-    let file = path.join(pathName, data.filename)
+  // const onSubmit = (user: any, e:any) => {
+  //   let file = path.join(pathName, user.filename)
 
-    data = {
-      "lastname": data.lastname,
-      "firstname": data.firstname,
-      "birthdate": data.birthdate,
-      "address": data.address
-    }
+  //   user = {
+  //     "lastname": user.lastname,
+  //     "firstname": user.firstname,
+  //     "birthdate": user.birthdate,
+  //     "address": user.address
+  //   }
 
-    console.log(data);
+  //   console.log(user);
 
-    if (!fs.existsSync(file)) {
-        fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
-            if (error) {
-                console.log(error)
-            }
-            console.log("Le fichier a été créé avec succès !")
-        });
-    } else {
-        var clients = fs.readFileSync(file, 'utf8');
-        var list = (clients.length) ? JSON.parse(clients) : [];
-        if (list instanceof Array) list.push(data)
-        else list = [data]
-        fs.writeFileSync(file, JSON.stringify(list, null, 2));
-        console.log("Un nouveau client a été ajouté ! ")
-    }
-    e.target.reset()
-  }
+  //   if (!fs.existsSync(file)) {
+  //       fs.writeFile(file, JSON.stringify([user], null, 2), (error: any) => {
+  //           if (error) {
+  //               console.log(error)
+  //           }
+  //           console.log("Le fichier a été créé avec succès !")
+  //       });
+  //   } else {
+  //       var clients = fs.readFileSync(file, 'utf8');
+  //       var list = (clients.length) ? JSON.parse(clients) : [];
+  //       if (list instanceof Array) list.push(user)
+  //       else list = [user]
+  //       fs.writeFileSync(file, JSON.stringify(list, null, 2));
+  //       console.log("Un nouveau client a été ajouté ! ")
+  //   }
+  //   e.target.reset()
+  // }
 
   return (
     <IonPage>
@@ -168,42 +179,31 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length>0 && data.map((user: any, key: number) => {
-
+            {APIData.map((data) => {
               return (
-                <tr key={key}>
-                  <td id="name">{user.lastname + " " + user.firstname}</td>
+                <tr>
+                  <td id="name">{data.lastName + " " + data.firstName}</td>
                   <td id="affairs">Affaires associées</td>
                   <td id="actions">
                     <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
+                    <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
                   </td>
                 </tr>
               );
             })}
-
-            <tr>
-              <td id="name"> </td>
-              <td id="affairs"> </td>
-              <td id="actions">
-                <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
-              </td>
-            </tr>
           </tbody>
         </table> 
 
-        <IonModal isOpen={showViewModal}>
+      {/* <IonModal isOpen={showViewModal}>
           <IonContent>
             <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            {data && data.length>0 && data.map((user: any, key: number) => {
+            {data && data.length>0 && data.map((data: any, key: number) => {
               return (
                 <div key={key}>
-                  <h5 className="titleModal">{"Clients > " + user.firstname + " " + user.lastname}</h5>
+                  <h5 className="titleModal">{"Clients > " + data.firstname + " " + data.lastname}</h5>
 
                   <div className="modalButtons">
                     <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Modifier Client</IonButton>
@@ -213,22 +213,22 @@ const Client: React.FC = () => {
                   <IonAvatar>
                     <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
                   </IonAvatar>
-                  <h3>{user.firstname + " " + user.lastname}</h3>
-                  <h6>{"client depuis " + user.creationDate}</h6>
+                  <h3>{data.firstname + " " + data.lastname}</h3>
+                  <h6>{"client depuis " + data.creationDate}</h6>
 
                   <h4>Adresse</h4>
-                  <p>{user.address}</p>
+                  <p>{data.address}</p>
 
                   <h4>Date de naissance</h4>
-                  <p>{user.birthDate}</p>
+                  <p>{data.birthDate}</p>
 
                   <h4>Dossiers associés</h4>
-                  <p>{user.folder.code + " - " + user.folder.statut}</p> <hr/>
+                  <p>{data.folder.code + " - " + data.folder.statut}</p> <hr/>
                 </div> 
               );
             })}
           </IonContent>
-        </IonModal>
+        </IonModal> */}
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
@@ -237,7 +237,7 @@ const Client: React.FC = () => {
             </IonButton>
             <h5 className="titleModal">Création d'un Client</h5>
 
-            <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
+            <form>
               {fields.map((field, index) => {
                 const {label, required, requiredOptions, props} = field;
                 

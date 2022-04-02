@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
@@ -19,15 +20,39 @@ interface SearchbarChangeEventDetail {
 
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
-  const [data, setData]=useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const getData=()=>{
-    fetch('http://localhost:5000/api/folder')
-    .then(res=>res.json())
-    .then(data=>{
-      setData(data);
+  const [APIData, setAPIData] = useState<any[]>([]);
+    useEffect(() => {
+        axios.get(`http://localhost:3000/case`)
+            .then((response) => {
+                console.log(response.data)
+                setAPIData(response.data);
+            })
+    }, []);
+
+  const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
+      let { id, code, description, startDate, status, endDate} = data;
+      localStorage.setItem('ID', id);
+      localStorage.setItem('Code', code);
+      localStorage.setItem('Description', description);
+      localStorage.setItem('Start date', startDate);
+      localStorage.setItem('Status', status);
+      localStorage.setItem('End date', endDate);
+  }
+
+  const getData = () => {
+      axios.get(`http://localhost:3000/case`)
+          .then((getData) => {
+              setAPIData(getData.data);
+          })
+  }
+
+  const onDelete = (id: any) => {
+    axios.delete(`http://localhost:3000/case/${id}`)
+    .then(() => {
+        getData();
     })
   }
 
@@ -44,19 +69,6 @@ const Folder: React.FC = () => {
   });
 
   const fields = [
-    {
-      label: "Filename",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "filename",
-        type: "text",
-        placeholder: "fichier de sauvegarde"
-      }
-    },
     {
       label: "Code",
       required: true,
@@ -97,7 +109,7 @@ const Folder: React.FC = () => {
       }
     },
     {
-      label: "StartDate",
+      label: "Date de début",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
@@ -110,7 +122,7 @@ const Folder: React.FC = () => {
       }
     },
     {
-      label: "endDate",
+      label: "Date de fin",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
@@ -190,36 +202,24 @@ const Folder: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length>0 && data.map((folder: any, key: number) => {
-
+            {APIData.map((data) => {
               return (
-                <tr key={key}>
-                  <td id="code">{folder.code}</td>
-                  <td id="statut">{folder.statut}</td>
-                  <td id="clients">{folder.user.lastname + " " + folder.user.firstname}</td>
+                <tr>
+                  <td id="code">{data.code}</td>
+                  <td id="statut">{data.status}</td>
+                  <td id="clients">Clients</td>
                   <td id="actions">
                     <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
+                    <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
                   </td>
                 </tr>
               );
             })}
-
-            <tr>
-              <td id="code"> </td>
-              <td id="statut"> </td>
-              <td id="clients"> </td>
-              <td id="actions">
-                <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
-              </td>
-            </tr>
           </tbody>
         </table> 
 
-        <IonModal isOpen={showViewModal}>
+        {/* <IonModal isOpen={showViewModal}>
           <IonContent>
             <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
@@ -255,7 +255,7 @@ const Folder: React.FC = () => {
               );
             })}
           </IonContent>
-        </IonModal>
+        </IonModal> */}
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
