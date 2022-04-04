@@ -2,7 +2,7 @@ import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -12,15 +12,13 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 
-import './Folder.css';
+import './FolderDetail.css';
 
 interface SearchbarChangeEventDetail {
   value?: string;
 }
 
-const Folder: React.FC = () => {
-  const [searchFolder, setSearchFolder] = useState('');
-  const [showViewModal, setShowViewModal] = useState(false);
+const FolderDetail: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const [APIData, setAPIData] = useState<any[]>([]);
@@ -182,84 +180,36 @@ const Folder: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h6> Ici sont répertoriés nos différents Dossiers </h6>
+        {APIData.map((data) => {
+            return (
+                <div>
+                    <h5 className="titleModal">{"Dossier > " + data.code}</h5>
 
-        <select id="sortByFolder">  
-          <option> Afficher affaires en cours et clôturées </option>  
-          <option> Afficher affaires en cours </option>  
-          <option> Afficher affaires clôturées </option>   
-        </select> 
+                    <div className="modalButtons">
+                      <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Modifier Dossier</IonButton>
+                      <IonButton color="danger">Supprimer</IonButton>
+                    </div>
 
-        <IonSearchbar id="searchBar" value={searchFolder} onIonChange={e => setSearchFolder(e.detail.value!)} placeholder="Rechercher un Dossier ..."/>
-      
-        <table>
-          <thead>
-            <tr>
-              <th id="headCode">Code</th>
-              <th id="headStatut">Statut</th>
-              <th id="headClients">Clients</th>
-              <th id="headActions">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {APIData.map((data) => {
-              return (
-                <tr>
-                  <td id="code">
-                    <IonRouterLink routerLink={`/folders/details/${data.id}`} routerDirection="forward">
-                      {data.code}
-                    </IonRouterLink>
-                  </td>
-                  <td id="statut">{data.status}</td>
-                  <td id="clients">Clients</td>
-                  <td id="actions">
-                    <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                    <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
-                  </td>
-                </tr>
+                    <h3>{data.code}</h3>
+                    <h6>{data.status}</h6>
+                    <h6>{"Affaire ouverte le " + data.creationDate}</h6>
+
+                    <h4>Description</h4>
+                    <p>{data.description}</p>
+
+                    <h4>Clients concernés</h4>
+                    <p>{data.user.lastName + " " + data.user.firstName}</p>
+
+                    <h4>Evenements</h4>
+                    <ul>
+                      <li>{data.event.date + " (" + data.event.duration + "h) - " + data.event.description}</li>
+                    </ul>
+                    <IonButton id="btnNewEvent">Ajouter un évènement</IonButton>
+
+                    <h4>{"Total : " + data.event.total.duration + "h"}</h4>
+                </div>
               );
-            })}
-          </tbody>
-        </table> 
-
-        {/* <IonModal isOpen={showViewModal}>
-          <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
-            </IonButton>
-            {data && data.length>0 && data.map((folder: any, key: number) => {
-              return (
-                <div key={key}>
-                  <h5 className="titleModal">{"Dossier > " + folder.code}</h5>
-
-                  <div className="modalButtons">
-                    <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Modifier Dossier</IonButton>
-                    <IonButton color="danger">Supprimer</IonButton>
-                  </div>
-
-                  <h3>{folder.code}</h3>
-                  <h6>{folder.statut}</h6>
-                  <h6>{"Affaire ouverte le " + folder.creationDate}</h6>
-
-                  <h4>Description</h4>
-                  <p>{folder.description}</p>
-
-                  <h4>Clients concernés</h4>
-                  <p>{folder.user.lastname + " " + folder.user.firstname}</p>
-
-                  <h4>Evenements</h4>
-                  <ul>
-                    <li>{folder.event.date + " (" + folder.event.duration + "h) - " + folder.event.description}</li>
-                  </ul>
-                  <IonButton id="btnNewEvent">Ajouter un évènement</IonButton>
-
-                  <h4>{"Total : " + folder.event.total.duration + "h"}</h4>
-                </div> 
-              );
-            })}
-          </IonContent>
-        </IonModal> */}
+        })}
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
@@ -289,19 +239,9 @@ const Folder: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Ajouter un dossier</IonButton>
-        <IonButton id="btnRefresh" color="success" onClick={btnUpdate}>Mettre à jour</IonButton>
-
-        <div className="pagination">
-          <a href="#">Précédent</a>
-          <a href="#" className="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
-          <a href="#">Suivant</a>
-        </div>
       </IonContent>
     </IonPage>
   );
 };
 
-export default Folder;
+export default FolderDetail;

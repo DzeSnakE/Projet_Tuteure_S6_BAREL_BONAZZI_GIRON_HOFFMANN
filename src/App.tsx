@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Home from './pages/Home/Home';
 import Client from './pages/Client/Client';
+import ClientDetail from './pages/Client/ClientDetail';
 import Folder from './pages/Folder/Folder';
 
 /* Core CSS required for Ionic components to work properly */
@@ -37,6 +38,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Clients" exact={true}>
               <Client />
+            </Route>
+            <Route path="/page/Client/Detail" exact={true}>
+              <ClientDetail />
             </Route>
             <Route path="/page/Dossiers" exact={true}>
               <Folder />
