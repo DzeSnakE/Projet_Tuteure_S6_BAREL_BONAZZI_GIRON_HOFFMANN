@@ -100,3 +100,7 @@ td {
 .pagination a:hover:not(.active) {
     background-color: #ddd;
 }
+
+.formFolder {
+    margin-top: 50px;
+}

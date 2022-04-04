@@ -6,6 +6,7 @@ import Home from './pages/Home/Home';
 import Client from './pages/Client/Client';
 import ClientDetail from './pages/Client/ClientDetail';
 import Folder from './pages/Folder/Folder';
+import FolderDetail from './pages/Folder/FolderDetail';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,17 +34,20 @@ const App: React.FC = () => {
         <IonSplitPane contentId="main">
           <Menu />
           <IonRouterOutlet id="main">
-            <Route path="/page/Accueil" exact={true}>
+            <Route path="/" exact={true}>
               <Home />
             </Route>
-            <Route path="/page/Clients" exact={true}>
+            <Route path="/clients" exact={true}>
               <Client />
             </Route>
-            <Route path="/page/Client/Detail" exact={true}>
+            <Route path="/clients/:id" exact={true}>
               <ClientDetail />
             </Route>
-            <Route path="/page/Dossiers" exact={true}>
+            <Route path="/dossiers" exact={true}>
               <Folder />
+            </Route>
+            <Route path="/dossiers/:id" exact={true}>
+              <FolderDetail />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>

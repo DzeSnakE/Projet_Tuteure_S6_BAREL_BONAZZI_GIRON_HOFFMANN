@@ -1,65 +1,41 @@
 import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
 
 import {
-  eyeOutline, eyeSharp,
-  createOutline, createSharp,
-  trashOutline, trashSharp,
+  folderOutline, folderSharp,
   closeOutline, closeSharp,
   alertCircleOutline
 } from 'ionicons/icons';
 
 import './FolderDetail.css';
 
-interface SearchbarChangeEventDetail {
-  value?: string;
-}
-
 const FolderDetail: React.FC = () => {
+  const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [data, setAPIData] = useState([] as any);
 
-  const [APIData, setAPIData] = useState<any[]>([]);
-    useEffect(() => {
-        axios.get(`http://localhost:3000/case`)
-            .then((response) => {
-                console.log(response.data)
-                setAPIData(response.data);
-            })
-    }, []);
+  let { id } = useParams() as any;
+  console.log('id :' + id);
 
-  const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
-      let { id, code, description, startDate, status, endDate} = data;
-      localStorage.setItem('ID', id);
-      localStorage.setItem('Code', code);
-      localStorage.setItem('Description', description);
-      localStorage.setItem('Start date', startDate);
-      localStorage.setItem('Status', status);
-      localStorage.setItem('End date', endDate);
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+        axios.get(`http://localhost:3000/case/${id}`).then((response) => {
+          setAPIData(response.data);
+          console.log(response.data);
+        })
+    };
+    fetchData();
+  }, [])
 
-  const getData = () => {
-      axios.get(`http://localhost:3000/case`)
-          .then((getData) => {
-              setAPIData(getData.data);
-          })
-  }
-
-  const onDelete = (id: any) => {
+  const onDelete = () => {
+    console.log(id)
     axios.delete(`http://localhost:3000/case/${id}`)
-    .then(() => {
-        getData();
-    })
+    history.push('/clients')
   }
-
-  function btnUpdate() {
-    getData()
-  }
-
-  const path = require('path');
-  const fs = window.require('fs');
 
   const {register, handleSubmit, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -77,7 +53,7 @@ const FolderDetail: React.FC = () => {
       props: {
         name: "code",
         type: "text",
-        placeholder: "Entrez un code"
+        placeholder: "aaaa-bbbb-cccc-dddd"
       }
     },
     {
@@ -90,7 +66,7 @@ const FolderDetail: React.FC = () => {
       props: {
         name: "description",
         type: "text",
-        placeholder: "Entrez une description"
+        placeholder: "Description du dossier ..."
       }
     },
     {
@@ -103,11 +79,11 @@ const FolderDetail: React.FC = () => {
       props: {
         name: "statut",
         type: "boolean",
-        placeholder: "Choisir le statut"
+        placeholder: "(0 : En cours, 1 : Clôturé)"
       }
     },
     {
-      label: "Date de début",
+      label: "Date début",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
@@ -120,7 +96,7 @@ const FolderDetail: React.FC = () => {
       }
     },
     {
-      label: "Date de fin",
+      label: "Date fin",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
@@ -134,40 +110,6 @@ const FolderDetail: React.FC = () => {
     }
   ];
   
-  console.log(errors);
-  let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
-
-  const onSubmit = (data: any, e:any) => {
-    let file = path.join(pathName, data.filename)
-
-    data = {
-      "code": data.code,
-      "description": data.description,
-      "statut": data.statut,
-      "startDate": data.startDate,
-      "endDate": data.endDate
-    }
-
-    console.log(data);
-
-    if (!fs.existsSync(file)) {
-        fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
-            if (error) {
-                console.log(error)
-            }
-            console.log("Le fichier a été créé avec succès !")
-        });
-    } else {
-        var folders = fs.readFileSync(file, 'utf8');
-        var list = (folders.length) ? JSON.parse(folders) : [];
-        if (list instanceof Array) list.push(data)
-        else list = [data]
-        fs.writeFileSync(file, JSON.stringify(list, null, 2));
-        console.log("Un nouveau dossier a été ajouté ! ")
-    }
-    e.target.reset()
-  }
-
   return (
     <IonPage>
       <IonHeader>
@@ -175,50 +117,42 @@ const FolderDetail: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Dossiers</IonTitle>
+          <IonTitle>{"Detail de " + data.code}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
-        {APIData.map((data) => {
-            return (
-                <div>
-                    <h5 className="titleModal">{"Dossier > " + data.code}</h5>
+      <IonContent className="app-container">
+        <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data.code}</h3>
 
-                    <div className="modalButtons">
-                      <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Modifier Dossier</IonButton>
-                      <IonButton color="danger">Supprimer</IonButton>
-                    </div>
+        <div className="app-button">
+          <IonButton id="btnDeleteFolder" onClick={onDelete} color="danger">Supprimer</IonButton>
+          <IonButton id="btnUpdateFolder" onClick={() => setShowEditModal(true)}>Modifier</IonButton>
+        </div>
 
-                    <h3>{data.code}</h3>
-                    <h6>{data.status}</h6>
-                    <h6>{"Affaire ouverte le " + data.creationDate}</h6>
+        <div className="folders">
+          <h1 className="folderIconName"><IonIcon id="folderIcon" slot="icon-only" ios={folderOutline} md={folderSharp} /> {data.code}</h1>
+          <h4>{data.status ? 'Clôturé':'En cours'}</h4>
+          <h5>{"Affaire ouverte le " + data.startDate}</h5> <br/>
 
-                    <h4>Description</h4>
-                    <p>{data.description}</p>
+          <h3>Description</h3>
+          <h4>{data.description}</h4> <br/>
 
-                    <h4>Clients concernés</h4>
-                    <p>{data.user.lastName + " " + data.user.firstName}</p>
+          <h3>Clients concernés</h3>
+          <h4>/</h4> <br/>
 
-                    <h4>Evenements</h4>
-                    <ul>
-                      <li>{data.event.date + " (" + data.event.duration + "h) - " + data.event.description}</li>
-                    </ul>
-                    <IonButton id="btnNewEvent">Ajouter un évènement</IonButton>
-
-                    <h4>{"Total : " + data.event.total.duration + "h"}</h4>
-                </div>
-              );
-        })}
+          <h3>Evenements</h3>
+          <h4>/</h4>
+          <IonButton color="success" id="btnNewEvent">Ajouter evenement</IonButton>
+        </div>
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowEditModal(false)}>
+            <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            <h5 className="titleModal">Création d'un Dossier</h5>
+            <h5 className="titleModal">{"Modification de " + data.code}</h5>
 
-            <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
+            <form className="formFolder">
               {fields.map((field, index) => {
                 const {label, required, requiredOptions, props} = field;
                 
@@ -226,7 +160,7 @@ const FolderDetail: React.FC = () => {
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>
                       <IonLabel position="fixed">{label}</IonLabel>
-                      <input {...props} {...register(props.name, {required, ...requiredOptions})} />
+                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
                     </>
 
                     {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
@@ -234,7 +168,7 @@ const FolderDetail: React.FC = () => {
                 );
               })}
 
-              <IonButton type="submit" id="btnSubmit">Ajouter</IonButton>
+              <IonButton type="submit" className="btnSubmit">Modifier</IonButton>
             </form>
           </IonContent>
         </IonModal>

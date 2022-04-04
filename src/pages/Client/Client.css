@@ -47,7 +47,7 @@ td {
 }
 
 .titleModal {
-    margin: 15px;
+    margin: 20px;
 }
 
 .modalButtons {
@@ -55,16 +55,12 @@ td {
     margin: 10px;
 }
 
-.formModal {
-    margin-top: 20px;
-}
-
 #btnSubmit {
     float: right;
     margin: 20px;
 }
 
-#btnNewClient, #btnRefresh {
+#btnNewClient {
     margin-top: 20px;
 }
 

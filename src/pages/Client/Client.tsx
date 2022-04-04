@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
 
@@ -14,52 +15,41 @@ import {
 
 import './Client.css';
 
-interface SearchbarChangeEventDetail {
-  value?: string;
-}
-
 const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
 
   const [APIData, setAPIData] = useState<any[]>([]);
     useEffect(() => {
-        axios.get(`http://localhost:3000/client`)
-            .then((response) => {
-                console.log(response.data)
-                setAPIData(response.data);
-            })
+      axios.get(`http://localhost:3000/client`)
+        .then((response) => {
+          console.log(response.data)
+          setAPIData(response.data);
+        })
     }, []);
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
-      let { id, firstName, lastName, address, birthDate} = data;
-      localStorage.setItem('ID', id);
-      localStorage.setItem('First Name', firstName);
-      localStorage.setItem('Last Name', lastName);
-      localStorage.setItem('Address', address);
-      localStorage.setItem('birthDate', birthDate);
+    let { id, firstName, lastName, address, birthDate} = data;
+    localStorage.setItem('ID', id);
+    localStorage.setItem('First Name', firstName);
+    localStorage.setItem('Last Name', lastName);
+    localStorage.setItem('Address', address);
+    localStorage.setItem('birthDate', birthDate);
   }
 
   const getData = () => {
-      axios.get(`http://localhost:3000/client`)
-          .then((getData) => {
-              setAPIData(getData.data);
-          })
+    axios.get(`http://localhost:3000/client`)
+      .then((getData) => {
+        setAPIData(getData.data);
+      })
   }
 
   const onDelete = (id: any) => {
     axios.delete(`http://localhost:3000/client/${id}`)
     .then(() => {
-        getData();
+      getData();
     })
   }
-
-  function btnUpdate() {
-    getData()
-  }
-
-  const path = require('path');
-  const fs = window.require('fs');
 
   const {register, handleSubmit, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -67,19 +57,6 @@ const Client: React.FC = () => {
   });
 
   const fields = [
-    {
-      label: "Prénom",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "firstname",
-        type: "text",
-        placeholder: "Entrez un prénom"
-      }
-    },
     {
       label: "Nom",
       required: true,
@@ -90,20 +67,20 @@ const Client: React.FC = () => {
       props: {
         name: "lastname",
         type: "text",
-        placeholder: "Entrez un nom"
+        placeholder: "Doe"
       }
     },
     {
-      label: "Date de naissance",
+      label: "Prénom",
       required: true,
       requiredOptions: {
-        minDate: '01/01/2000'
+        minLength: 2,
+        maxLength: 20
       },
       props: {
-        name: "birthdate",
-        type: "date",
-        inputmode: "datePicker",
-        placeholder: "jj/mm/AAAA"
+        name: "firstname",
+        type: "text",
+        placeholder: "John"
       }
     },
     {
@@ -116,7 +93,20 @@ const Client: React.FC = () => {
       props: {
         name: "address",
         type: "text",
-        placeholder: "Entrez une adresse"
+        placeholder: "3 rue de la Réussite"
+      }
+    },
+    {
+      label: "Naissance",
+      required: true,
+      requiredOptions: {
+        minDate: '01/01/2000'
+      },
+      props: {
+        name: "birthdate",
+        type: "date",
+        inputmode: "datePicker",
+        placeholder: "jj/mm/AAAA"
       }
     }
   ];
@@ -149,13 +139,16 @@ const Client: React.FC = () => {
               return (
                 <tr>
                   <td id="name">
-                    {data.lastName.toUpperCase() + " " + data.firstName}
+                    {data.lastName + " " + data.firstName}
                   </td>
-                  <td id="affairs">Affaires associées</td>
+                  <td id="affairs">/</td>
                   <td id="actions">
-                    <IonButton routerLink={`page/Client/Detail/${data.id}`} routerDirection="forward" id="eyeButton" color="primary" size="small">
-                      <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
-                    </IonButton>
+                    <Link to={'/clients/' + data.id}>
+                      <IonButton id="eyeButton" color="primary" size="small">
+                        <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                      </IonButton>
+                    </Link>
+                
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
                   </td>
@@ -167,12 +160,12 @@ const Client: React.FC = () => {
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowEditModal(false)}>
+            <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            <h5 className="titleModal">Création d'un Client</h5>
+            <h3 className="titleModal">Nouveau Client</h3>
 
-            <form>
+            <form className="formClient">
               {fields.map((field, index) => {
                 const {label, required, requiredOptions, props} = field;
                 
@@ -180,7 +173,7 @@ const Client: React.FC = () => {
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>
                       <IonLabel position="fixed">{label}</IonLabel>
-                      <input {...props} {...register(props.name, {required, ...requiredOptions})} />
+                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
                     </>
 
                     {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
@@ -188,7 +181,7 @@ const Client: React.FC = () => {
                 );
               })}
 
-              <IonButton type="submit" id="btnSubmit">Ajouter</IonButton>
+              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
         </IonModal>
