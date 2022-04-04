@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
-import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
+import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
-
+import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
   createOutline, createSharp,
@@ -10,30 +10,54 @@ import {
   closeOutline, closeSharp,
   alertCircleOutline
 } from 'ionicons/icons';
-
+//import nextId from "react-id-generator";
 import './Client.css';
-
+import {
+  useIonAlert
+} from '@ionic/react';
 interface SearchbarChangeEventDetail {
   value?: string;
 }
 
 const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
-  const [data, setData]=useState([]);
+  const [data, setData]=useState<any[]>([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
-  const getData=()=>{
+  const [selectedClient, setSelectedClient] = useState<clientData>();
+  const [edit, setEdit] = useState(false);
+  const [message] = useIonAlert();
+  const clientsLength = data.length;
+  const getData2=()=>{
     fetch('http://localhost:5000/api/client')
     .then(res=>res.json())
     .then(data=>{
       setData(data);
     })
   }
+  const getData=()=>{
 
-  function btnUpdate() {
-    getData()
+    fetch('clients.json'
+        ,{
+          headers : {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+          }
+        }).then(function(response){
+          console.log(response)
+          return response.json();
+        }).then(function(data) {
+          console.log(data);
+          setData(data)
+    }).catch(function (error) {
+      // if there's an error, log it
+      console.log(error);
+    });
   }
+  useEffect(()=>{
+    getData()
+  },[])
+
 
   const path = require('path');
   const fs = window.require('fs');
@@ -42,7 +66,7 @@ const Client: React.FC = () => {
     mode: "onTouched",
     reValidateMode: "onChange"
   });
-
+  const date = new Date().toLocaleDateString();
   const fields = [
     {
       label: "Filename",
@@ -54,7 +78,21 @@ const Client: React.FC = () => {
       props: {
         name: "filename",
         type: "text",
+        value: "clients.json",
         placeholder: "fichier de sauvegarde"
+      }
+    },
+    {
+      label: "Code client",
+      required: true,
+      requiredOptions: {
+        minLength: 2,
+        maxLength: 10
+      },
+      props: {
+        name: "codeClient",
+        type: "text",
+        placeholder: "Entrez un code client"
       }
     },
     {
@@ -92,8 +130,6 @@ const Client: React.FC = () => {
       props: {
         name: "birthdate",
         type: "date",
-        inputmode: "datePicker",
-        placeholder: "jj/mm/AAAA"
       }
     },
     {
@@ -108,6 +144,19 @@ const Client: React.FC = () => {
         type: "text",
         placeholder: "Entrez une adresse"
       }
+    },
+    {
+      label: "Inscription",
+      required: true,
+      requiredOptions: {
+
+        minDate: '01/01/2000'
+      },
+      props: {
+        name: "inscription",
+        type: "Datetime",
+        value: date,
+      }
     }
   ];
   
@@ -116,12 +165,15 @@ const Client: React.FC = () => {
 
   const onSubmit = (data: any, e:any) => {
     let file = path.join(pathName, data.filename)
-
+    const id = clientsLength;
     data = {
+      "id": id,
+      "codeClient":data.codeClient,
       "lastname": data.lastname,
       "firstname": data.firstname,
       "birthdate": data.birthdate,
-      "address": data.address
+      "address": data.address,
+      "inscription": data.inscription
     }
 
     console.log(data);
@@ -140,8 +192,34 @@ const Client: React.FC = () => {
         else list = [data]
         fs.writeFileSync(file, JSON.stringify(list, null, 2));
         console.log("Un nouveau client a été ajouté ! ")
+        e.target.reset()
     }
     e.target.reset()
+    getData()
+  }
+
+
+  const deleteClient = (data:any,index:number) => {
+    let file = path.join(pathName, 'clients.json');
+    if (fs.existsSync(file)) {
+      var clients = fs.readFileSync(file, 'utf8');
+      var list = (clients.length) ? JSON.parse(clients) : [];
+      if (list instanceof Array) list.splice(index, 1)
+      for(let i = 0;i<list.length;i++){
+        list[i].id = i;
+      }
+      fs.writeFileSync(file, JSON.stringify(list, null, 2));
+      console.log("Le client a été supprimé! ")
+    }else {
+      console.log('erreur,ça ne fonctionne pas')
+    }
+    getData()
+  }
+
+  function modClient(client: any) {
+    setSelectedClient(client)
+    setEdit(true)
+    setShowViewModal(true)
   }
 
   return (
@@ -156,7 +234,6 @@ const Client: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h6> Ici sont répertoriés nos différents Clients </h6>
         <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
       
         <table>
@@ -168,30 +245,32 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length>0 && data.map((user: any, key: number) => {
-
+            {data && data.length>0 && data.map((client: any, index:number) => {
               return (
-                <tr key={key}>
-                  <td id="name">{user.lastname + " " + user.firstname}</td>
+                <tr key={index}>
+                  <td id="name">{client.lastname + " " + client.firstname}</td>
                   <td id="affairs">Affaires associées</td>
                   <td id="actions">
-                    <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                    <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
+                    <IonButton  color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
+                    <IonButton  onClick={() => modClient(client)}  color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                    <IonButton  color="danger" size="small"
+                                onClick={() =>  message({
+                                  cssClass: 'my-css',
+                                  header: "Supprimer un client",
+                                  message: "Voulez-vous vraiment supprimer ce client ?",
+                                  buttons: [
+                                    {text: 'Annuler', role: 'cancel'},
+                                    {text: 'Confirmer', handler: () => deleteClient(data, client.id)}
+                                  ],
+                                })
+                                }
+                                >
+                                  <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp}/>
+                    </IonButton>
                   </td>
                 </tr>
               );
             })}
-
-            <tr>
-              <td id="name"> </td>
-              <td id="affairs"> </td>
-              <td id="actions">
-                <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                <IonButton id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
-              </td>
-            </tr>
           </tbody>
         </table> 
 
@@ -200,42 +279,46 @@ const Client: React.FC = () => {
             <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            {data && data.length>0 && data.map((user: any, key: number) => {
+            {data && data.length>0 && data.map((client: clientData) => {
               return (
-                <div key={key}>
-                  <h5 className="titleModal">{"Clients > " + user.firstname + " " + user.lastname}</h5>
+
+                <div key={client.id}>
+
+                  <h5 className="titleModal">{"Clients > " + selectedClient?.firstname + " " + selectedClient?.lastname}</h5>
 
                   <div className="modalButtons">
                     <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Modifier Client</IonButton>
                     <IonButton color="danger">Supprimer</IonButton>
                   </div>
 
-                  <IonAvatar>
-                    <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
-                  </IonAvatar>
-                  <h3>{user.firstname + " " + user.lastname}</h3>
-                  <h6>{"client depuis " + user.creationDate}</h6>
+                        <IonAvatar>
+                          <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"/>
+                        </IonAvatar>
+                        <h3>{selectedClient?.codeClient}</h3>
+                        <h3>{selectedClient?.firstname + " " + selectedClient?.lastname}</h3>
+                        <h6>{"client depuis " + selectedClient?.inscription}</h6>
 
-                  <h4>Adresse</h4>
-                  <p>{user.address}</p>
+                        <h4>Adresse</h4>
+                        <p>{selectedClient?.address}</p>
 
-                  <h4>Date de naissance</h4>
-                  <p>{user.birthDate}</p>
+                        <h4>Date de naissance</h4>
+                        <p>{selectedClient?.birthdate}</p>
 
-                  <h4>Dossiers associés</h4>
-                  <p>{user.folder.code + " - " + user.folder.statut}</p> <hr/>
-                </div> 
+                        <h4>Dossiers associés</h4>
+                        <p>AZ/0987</p>
+                        <hr/>
+
+                </div>
               );
             })}
           </IonContent>
         </IonModal>
-
         <IonModal isOpen={showEditModal}>
           <IonContent>
             <IonButton id="closeModal" onClick={() => setShowEditModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            <h5 className="titleModal">Création d'un Client</h5>
+            <h5 className="titleModal">Création/Edition d'un Client</h5>
 
             <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
               {fields.map((field, index) => {
@@ -259,7 +342,6 @@ const Client: React.FC = () => {
         </IonModal>
 
         <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Ajouter un client</IonButton>
-        <IonButton id="btnRefresh" color="success" onClick={btnUpdate}>Mettre à jour</IonButton>
 
         <div className="pagination">
           <a href="#">Précédent</a>

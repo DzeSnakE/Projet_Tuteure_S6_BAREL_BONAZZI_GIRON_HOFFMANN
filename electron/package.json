@@ -9,7 +9,8 @@
   "dependencies": {
     "@capacitor/core": "^3.4.3",
     "@capacitor/electron": "^2.4.7",
-    "electron-is-dev": "^1.1.0"
+    "electron-is-dev": "^1.1.0",
+    "react-id-generator": "^3.0.2"
   },
   "devDependencies": {
     "electron": "^8.0.0"
