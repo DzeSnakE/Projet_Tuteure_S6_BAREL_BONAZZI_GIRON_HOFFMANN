@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonButton, IonModal, IonItem, IonLabel } from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   personOutline, personSharp,
@@ -16,6 +16,7 @@ import './ClientDetail.css';
 const ClientDetail: React.FC = () => {
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [message] = useIonAlert();
 
   let { id } = useParams() as any;
   console.log('id :' + id);
@@ -29,7 +30,7 @@ const ClientDetail: React.FC = () => {
       })
     };
     fetchData();
-  }, [])
+  }, [id])
 
   const onDelete = () => {
     console.log(id)
@@ -112,7 +113,17 @@ const ClientDetail: React.FC = () => {
         <h3 className="clientName"><Link to={'/clients'}><u>Clients</u></Link> &gt; {data.lastName + " " + data.firstName}</h3>
 
         <div className="app-button">
-          <IonButton id="btnDeleteClient" onClick={onDelete} color="danger">Supprimer</IonButton>
+          <IonButton onClick={() => message({
+            header: "Supprimer un client",
+            message: "Voulez-vous vraiment supprimer ce client ?",
+            buttons: [
+              {text: 'Annuler', role: 'cancel'},
+              {text: 'Confirmer', handler: () => onDelete()} 
+            ]
+            })
+            } id="btnDeleteClient" color="danger"> Supprimer
+          </IonButton> 
+          
           <IonButton id="btnUpdateClient" onClick={() => setShowEditModal(true)}>Modifier</IonButton>
         </div>
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -18,6 +18,7 @@ import './Client.css';
 const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [message] = useIonAlert();
 
   let { id } = useParams() as any;
   console.log('id :' + id);
@@ -142,18 +143,26 @@ const Client: React.FC = () => {
               return (
                 <tr>
                   <td id="name">{data.lastName + " " + data.firstName}</td>
-                  {data.map((cases : any) => {
-                    <td id="affairs">{cases.code}</td>
-                  })}
+                  <td id="affairs">/</td>
                   <td id="actions">
-                    <a onClick={() => {window.location.href='/clients/'+ data.id}}>
+                    <Link to={'/clients/' + data.id}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
-                    </a>
+                    </Link>
 
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
+                    <IonButton onClick={() => message({
+                      header: "Supprimer un client",
+                      message: "Voulez-vous vraiment supprimer ce client ?",
+                      buttons: [
+                        {text: 'Annuler', role: 'cancel'},
+                        {text: 'Confirmer', handler: () => onDelete(data.id)} 
+                      ]
+                      })
+                      } id="trashButton" color="danger" size="small">
+                        <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
+                    </IonButton> 
                   </td>
                 </tr>
               );  

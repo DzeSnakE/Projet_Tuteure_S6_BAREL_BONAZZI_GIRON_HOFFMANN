@@ -1,8 +1,9 @@
 import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel } from '@ionic/react';
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -17,6 +18,7 @@ import './Folder.css';
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [message] = useIonAlert();
 
   const [APIData, setAPIData] = useState<any[]>([]);
   useEffect(() => {
@@ -177,14 +179,24 @@ const Folder: React.FC = () => {
                   <td id="statut">{data.status ? 'Clôturé':'En cours'}</td>
                   <td id="clients">/</td>
                   <td id="actions">
-                    <a onClick={() => {window.location.href='/dossiers/' + data.id}}>
+                    <Link to={'/dossiers/' + data.id}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
-                    </a>
+                    </Link>
                 
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
+                    <IonButton onClick={() => message({
+                      header: "Supprimer un dossier",
+                      message: "Voulez-vous vraiment supprimer ce dossier ?",
+                      buttons: [
+                        {text: 'Annuler', role: 'cancel'},
+                        {text: 'Confirmer', handler: () => onDelete(data.id)} 
+                      ]
+                      })
+                      } id="trashButton" color="danger" size="small">
+                        <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
+                    </IonButton> 
                   </td>
                 </tr>
               );

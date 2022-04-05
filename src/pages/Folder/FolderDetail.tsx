@@ -2,8 +2,8 @@ import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
+import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
+  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   folderOutline, folderSharp,
@@ -17,6 +17,7 @@ const FolderDetail: React.FC = () => {
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [message] = useIonAlert();
   const [data, setAPIData] = useState([] as any);
 
   let { id } = useParams() as any;
@@ -30,7 +31,7 @@ const FolderDetail: React.FC = () => {
         })
     };
     fetchData();
-  }, [])
+  }, [id])
 
   const onDelete = () => {
     console.log(id)
@@ -168,7 +169,17 @@ const FolderDetail: React.FC = () => {
         <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data.code}</h3>
 
         <div className="app-button">
-          <IonButton id="btnDeleteFolder" onClick={onDelete} color="danger">Supprimer</IonButton>
+          <IonButton onClick={() => message({
+            header: "Supprimer un dossier",
+            message: "Voulez-vous vraiment supprimer ce dossier ?",
+            buttons: [
+              {text: 'Annuler', role: 'cancel'},
+              {text: 'Confirmer', handler: () => onDelete()} 
+            ]
+            })
+            } id="btnDeleteFolder" color="danger"> Supprimer
+          </IonButton> 
+
           <IonButton id="btnUpdateFolder" onClick={() => setShowEditModal(true)}>Modifier</IonButton>
         </div>
 
