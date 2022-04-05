@@ -22,12 +22,18 @@ export const Routes = [{
     route: "/client/:id",
     controller: ClientController,
     action: "remove"
-}, {
-    method: "put",
-    route: "/client/:id",
-    controller: ClientController,
-    action: "update"
 },
+    {
+        method: "get",
+        route: "/client/case/:id",
+        controller: ClientController,
+        action: "eachWithCase"
+    }, {
+        method: "put",
+        route: "/client/:id",
+        controller: ClientController,
+        action: "update"
+    },
 
 
     {
@@ -43,16 +49,35 @@ export const Routes = [{
     },
     {
         method: "get",
+        route: "/case/client/:id",
+        controller: CaseController,
+        action: "eachWithClient"
+    },
+    {
+        method: "get",
         route: "/case/status/true",
         controller: CaseController,
         action: "statusTrue"
     },
     {
         method: "get",
+        route: "/case/events/:id",
+        controller: CaseController,
+        action: "caseWithEvent"
+    },
+    {
+        method: "get",
         route: "/case/status/false",
         controller: CaseController,
         action: "statusFalse"
-    }, {
+    },
+    {
+        method: "get",
+        route: "/case/event/time/:id",
+        controller: CaseController,
+        action: "countTimeEvent"
+    },
+    {
         method: "post",
         route: "/case",
         controller: CaseController,

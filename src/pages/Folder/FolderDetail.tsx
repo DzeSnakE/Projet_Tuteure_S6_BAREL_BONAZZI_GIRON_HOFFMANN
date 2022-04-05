@@ -131,7 +131,7 @@ const FolderDetail: React.FC = () => {
 
         <div className="folders">
           <h1 className="folderIconName"><IonIcon id="folderIcon" slot="icon-only" ios={folderOutline} md={folderSharp} /> {data.code}</h1>
-          <h4>{data.status ? 'Clôturé':'En cours'}</h4>
+          <h4>&gt; {data.status ? 'Clôturé':'En cours'}</h4>
           <h5>{"Affaire ouverte le " + data.startDate}</h5> <br/>
 
           <h3>Description</h3>
