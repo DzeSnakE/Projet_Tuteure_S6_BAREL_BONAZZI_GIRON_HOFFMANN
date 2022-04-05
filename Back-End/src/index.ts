@@ -33,7 +33,7 @@ createConnection().then(async connection => {
 
     app.listen(3000);
 
-
+    /*
     const client1 = new Client();
     client1.firstName = "Mickael";
     client1.lastName = "Dupont";
@@ -88,7 +88,7 @@ createConnection().then(async connection => {
     event4.date = new Date();
     event4.time = 5;
     event4.cases = case2;
-    await connection.manager.save(event4);
+    await connection.manager.save(event4);*/
 
 
     console.log("Express server has started on port 3000. Open http://localhost:3000/client to see results");

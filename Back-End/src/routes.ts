@@ -22,7 +22,7 @@ export const Routes = [{
     route: "/client/:id",
     controller: ClientController,
     action: "remove"
-},{
+}, {
     method: "put",
     route: "/client/:id",
     controller: ClientController,
@@ -30,26 +30,39 @@ export const Routes = [{
 },
 
 
-    {method: "get",
-    route: "/case",
-    controller: CaseController,
-    action: "all"
-}, {
-    method: "get",
+    {
+        method: "get",
+        route: "/case",
+        controller: CaseController,
+        action: "all"
+    }, {
+        method: "get",
         route: "/case/:id",
         controller: CaseController,
         action: "one"
-}, {
-    method: "post",
+    },
+    {
+        method: "get",
+        route: "/case/status/true",
+        controller: CaseController,
+        action: "statusTrue"
+    },
+    {
+        method: "get",
+        route: "/case/status/false",
+        controller: CaseController,
+        action: "statusFalse"
+    }, {
+        method: "post",
         route: "/case",
         controller: CaseController,
         action: "save"
-}, {
-    method: "delete",
+    }, {
+        method: "delete",
         route: "/case/:id",
         controller: CaseController,
         action: "remove"
-},{
+    }, {
         method: "put",
         route: "/case/:id",
         controller: CaseController,
@@ -57,26 +70,27 @@ export const Routes = [{
     },
 
 
-    {method: "get",
-    route: "/event",
-    controller: EventController,
-    action: "all"
-}, {
-    method: "get",
-    route: "/event/:id",
-    controller: EventController,
-    action: "one"
-}, {
-    method: "post",
-    route: "/event",
-    controller: EventController,
-    action: "save"
-}, {
-    method: "delete",
-    route: "/event/:id",
-    controller: EventController,
-    action: "remove"
-},
+    {
+        method: "get",
+        route: "/event",
+        controller: EventController,
+        action: "all"
+    }, {
+        method: "get",
+        route: "/event/:id",
+        controller: EventController,
+        action: "one"
+    }, {
+        method: "post",
+        route: "/event",
+        controller: EventController,
+        action: "save"
+    }, {
+        method: "delete",
+        route: "/event/:id",
+        controller: EventController,
+        action: "remove"
+    },
     {
         method: "put",
         route: "/event/:id",
