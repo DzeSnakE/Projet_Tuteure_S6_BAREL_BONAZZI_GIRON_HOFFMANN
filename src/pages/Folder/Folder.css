@@ -69,7 +69,7 @@ td {
     margin: 20px;
 }
 
-#btnNewFolder, #btnRefresh {
+#btnNewFolder {
     margin-top: 20px;
 }
 
@@ -99,4 +99,8 @@ td {
   
 .pagination a:hover:not(.active) {
     background-color: #ddd;
+}
+
+.formFolder {
+    margin-top: 50px;
 }

@@ -11,7 +11,7 @@ export class EventController {
     }
 
     async one(request: Request, response: Response, next: NextFunction) {
-        return this.eventRepository.findOneById(request.params.id);
+        return this.eventRepository.findOneById(parseInt(request.params.id));
     }
 
     async save(request: Request, response: Response, next: NextFunction) {
@@ -19,13 +19,13 @@ export class EventController {
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {
-        let eventToRemove = await this.eventRepository.findOneById(request.params.id);
+        let eventToRemove = await this.eventRepository.findOneById(parseInt(request.params.id));
         await this.eventRepository.remove(eventToRemove);
     }
 
     async update(request: Request, response: Response, next: NextFunction) {
-        await this.eventRepository.findOneById(request.params.id);
+        await this.eventRepository.findOneById(parseInt(request.params.id));
         await this.eventRepository.update(request.params.id, request.body);
-        return this.eventRepository.findOneById(request.params.id);
+        return this.eventRepository.findOneById(parseInt(request.params.id));
     }
 }
