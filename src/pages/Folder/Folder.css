@@ -1,5 +1,15 @@
-h6, #sortByFolder, #searchBar {
-    margin-top: 15px;
+#titlePageFolder {
+    margin: 20px 0px 0px 10px;
+}
+
+#sortByFolder {
+    margin: 20px 0px 0px 10px;
+    height: 40px;
+    border-radius: 3px;
+}
+
+#searchBar {
+    margin-top: 20px;
 }
 
 table {
@@ -18,32 +28,27 @@ thead {
     padding: 8px;
 }
 
-th {
-    padding: 8px;
-}
-
 td {
     border: 2px solid #3880ff;
     padding: 8px;
 }
 
-#headCode {
-    width: 15%;
+#headCode, #headStatut {
+    width: 20%;
     border-right: 2px solid azure;
+    padding: 8px;
 }
 
-#headStatut {
-    width: 15%;
-    border-right: 2px solid azure;
-}
 
 #headClients {
-    width: 50%;
+    width: 40%;
     border-right: 2px solid azure;
+    padding: 8px;
 }
 
 #headActions {
     width: 20%;
+    padding: 8px;
 }
 
 #closeModal {

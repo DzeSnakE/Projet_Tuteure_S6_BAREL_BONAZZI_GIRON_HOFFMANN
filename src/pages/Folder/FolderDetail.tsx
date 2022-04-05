@@ -150,7 +150,7 @@ const FolderDetail: React.FC = () => {
             <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
-            <h5 className="titleModal">{"Modification de " + data.code}</h5>
+            <h5 className="titleModal">{"Modification du dossier " + data.code}</h5>
 
             <form className="formFolder">
               {fields.map((field, index) => {

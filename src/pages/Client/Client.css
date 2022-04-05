@@ -1,5 +1,9 @@
-h6, #searchBar {
-    margin-top: 15px;
+#titlePageClient {
+    margin: 20px 0px 0px 10px;
+}
+
+#searchBar {
+    margin-top: 20px;
 }
 
 table {
@@ -18,27 +22,26 @@ thead {
     padding: 8px;
 }
 
-th {
-    padding: 8px;
-}
-
 td {
     border: 2px solid #3880ff;
     padding: 8px;
 }
 
 #headName {
-    width: 35%;
+    width: 30%;
     border-right: 2px solid azure;
+    padding: 8px;
 }
 
 #headAffairs {
-    width: 40%;
+    width: 50%;
     border-right: 2px solid azure;
+    padding: 8px;
 }
 
 #headActions {
-    width: 25%;
+    width: 20%;
+    padding: 8px;
 }
 
 #closeModal {

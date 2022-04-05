@@ -123,7 +123,7 @@ const Client: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h5> Ici sont répertoriés nos différents Clients </h5>
+        <h5 id="titlePageClient"> Ici sont répertoriés nos différents Clients </h5>
         <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
       
         <table>
@@ -143,11 +143,11 @@ const Client: React.FC = () => {
                   </td>
                   <td id="affairs">/</td>
                   <td id="actions">
-                    <Link to={'/clients/' + data.id}>
+                    <a onClick={() => {window.location.href='/clients/'+ data.id}}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
-                    </Link>
+                    </a>
                 
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  

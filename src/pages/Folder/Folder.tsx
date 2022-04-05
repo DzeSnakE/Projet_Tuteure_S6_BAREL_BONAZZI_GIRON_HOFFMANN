@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -20,13 +20,13 @@ const Folder: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const [APIData, setAPIData] = useState<any[]>([]);
-    useEffect(() => {
-      axios.get(`http://localhost:3000/case`)
-        .then((response) => {
-          console.log(response.data)
-          setAPIData(response.data);
-        })
-    }, []);
+  useEffect(() => {
+    axios.get(`http://localhost:3000/case`)
+      .then((response) => {
+        console.log(response.data)
+        setAPIData(response.data);
+      })
+  }, []);
 
   const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
     let { id, code, description, startDate, status, endDate} = data;
@@ -42,6 +42,20 @@ const Folder: React.FC = () => {
     axios.get(`http://localhost:3000/case`)
       .then((getData) => {
         setAPIData(getData.data);
+      })
+  }
+
+  const getStatusTrue = () => {
+    axios.get(`http://localhost:3000/case/status/true`)
+      .then((getStatusTrue) => {
+        setAPIData(getStatusTrue.data);
+      })
+  }
+
+  const getStatusFalse = () => {
+    axios.get(`http://localhost:3000/case/status/false`)
+      .then((getStatusFalse) => {
+        setAPIData(getStatusFalse.data);
       })
   }
 
@@ -137,12 +151,12 @@ const Folder: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h5> Ici sont répertoriés nos différents Dossiers </h5>
+        <h5 id="titlePageFolder"> Ici sont répertoriés nos différents Dossiers </h5>
 
         <select id="sortByFolder">  
-          <option> Afficher affaires en cours et clôturées </option>  
-          <option> Afficher affaires en cours </option>  
-          <option> Afficher affaires clôturées </option>   
+          <option onSelect={() => getData()}> Afficher affaires en cours et clôturées </option>  
+          <option onSelect={() => getStatusFalse()}> Afficher affaires en cours </option>  
+          <option onSelect={() => getStatusTrue()}> Afficher affaires clôturées </option>   
         </select> 
 
         <IonSearchbar id="searchBar" value={searchFolder} onIonChange={e => setSearchFolder(e.detail.value!)} placeholder="Rechercher un Dossier ..."/>
@@ -164,11 +178,11 @@ const Folder: React.FC = () => {
                   <td id="statut">{data.status ? 'Clôturé':'En cours'}</td>
                   <td id="clients">/</td>
                   <td id="actions">
-                    <Link to={'/dossiers/' + data.id}>
+                    <a onClick={() => {window.location.href='/dossiers/' + data.id}}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
-                    </Link>
+                    </a>
                 
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
