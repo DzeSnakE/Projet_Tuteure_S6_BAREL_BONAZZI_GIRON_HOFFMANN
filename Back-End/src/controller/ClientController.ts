@@ -21,6 +21,12 @@ export class ClientController {
             .getMany();
     }
 
+    async allWithCase(request: Request, response: Response, next: NextFunction) {
+        return await this.clientRepository.createQueryBuilder("client")
+            .leftJoinAndSelect("client.cases", "case")
+            .getMany();
+    }
+
     async save(request: Request, response: Response, next: NextFunction) {
         return this.clientRepository.save(request.body);
     }

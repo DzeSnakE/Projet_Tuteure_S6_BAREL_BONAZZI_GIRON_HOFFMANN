@@ -32,6 +32,13 @@ export class CaseController {
             .getMany();
     }
 
+    async allWithClient(request: Request, response: Response, next: NextFunction) {
+        return await this.caseRepository.createQueryBuilder("case")
+            .leftJoinAndSelect("case.clients", "client")
+            .getMany();
+    }
+
+
     async statusFalse(request: Request, response: Response, next: NextFunction) {
         return this.caseRepository.findBy({status: false});
     }

@@ -13,6 +13,11 @@ export const Routes = [{
     controller: ClientController,
     action: "one"
 }, {
+    method: "get",
+    route: "/case/all/client",
+    controller: CaseController,
+    action: "allWithClient"
+}, {
     method: "post",
     route: "/client",
     controller: ClientController,
@@ -28,7 +33,14 @@ export const Routes = [{
         route: "/client/case/:id",
         controller: ClientController,
         action: "eachWithCase"
-    }, {
+    },
+    {
+        method: "get",
+        route: "/client/all/case",
+        controller: ClientController,
+        action: "allWithCase"
+    },
+    {
         method: "put",
         route: "/client/:id",
         controller: ClientController,

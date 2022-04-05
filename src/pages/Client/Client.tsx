@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
 
@@ -19,14 +19,17 @@ const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
 
+  let { id } = useParams() as any;
+  console.log('id :' + id);
+
   const [APIData, setAPIData] = useState<any[]>([]);
-    useEffect(() => {
-      axios.get(`http://localhost:3000/client`)
-        .then((response) => {
-          console.log(response.data)
-          setAPIData(response.data);
-        })
-    }, []);
+  useEffect(() => {
+    axios.get(`http://localhost:3000/client/all/case`)
+      .then((response) => {
+        console.log(response.data)
+        setAPIData(response.data);
+      })
+  }, []);
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
     let { id, firstName, lastName, address, birthDate} = data;
@@ -138,22 +141,22 @@ const Client: React.FC = () => {
             {APIData.map((data) => {
               return (
                 <tr>
-                  <td id="name">
-                    {data.lastName + " " + data.firstName}
-                  </td>
-                  <td id="affairs">/</td>
+                  <td id="name">{data.lastName + " " + data.firstName}</td>
+                  {data.map((cases : any) => {
+                    <td id="affairs">{cases.code}</td>
+                  })}
                   <td id="actions">
                     <a onClick={() => {window.location.href='/clients/'+ data.id}}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
                     </a>
-                
+
                     <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton onClick={() => onDelete(data.id)} id="trashButton" color="danger" size="small"><IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} /></IonButton>  
                   </td>
                 </tr>
-              );
+              );  
             })}
           </tbody>
         </table> 

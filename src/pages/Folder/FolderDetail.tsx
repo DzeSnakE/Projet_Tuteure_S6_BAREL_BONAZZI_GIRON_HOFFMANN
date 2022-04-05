@@ -16,6 +16,7 @@ import './FolderDetail.css';
 const FolderDetail: React.FC = () => {
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
   const [data, setAPIData] = useState([] as any);
 
   let { id } = useParams() as any;
@@ -89,7 +90,7 @@ const FolderDetail: React.FC = () => {
         minDate: '01/01/2000'
       },
       props: {
-        name: "EndDate",
+        name: "beginDate",
         type: "date",
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"
@@ -106,6 +107,48 @@ const FolderDetail: React.FC = () => {
         type: "date",
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"
+      }
+    }
+  ];
+
+  const fieldsEvent = [
+    {
+      label: "Date",
+      required: true,
+      requiredOptions: {
+        minDate: '01/01/2000'
+      },
+      props: {
+        name: "date",
+        type: "date",
+        inputmode: "datePicker",
+        placeholder: "jj/mm/AAAA"
+      }
+    },
+    {
+      label: "Durée",
+      required: true,
+      requiredOptions: {
+        minLength: 2,
+        maxLength: 5
+      },
+      props: {
+        name: "duree",
+        type: "number",
+        placeholder: "24"
+      }
+    },
+    {
+      label: "Description",
+      required: true,
+      requiredOptions: {
+        minLength: 2,
+        maxLength: 250
+      },
+      props: {
+        name: "description",
+        type: "text",
+        placeholder: "Description du dossier ..."
       }
     }
   ];
@@ -134,15 +177,15 @@ const FolderDetail: React.FC = () => {
           <h4>&gt; {data.status ? 'Clôturé':'En cours'}</h4>
           <h5>{"Affaire ouverte le " + data.startDate}</h5> <br/>
 
-          <h3>Description</h3>
+          <h3 className="modalSubtitle">Description</h3>
           <h4>{data.description}</h4> <br/>
 
-          <h3>Clients concernés</h3>
+          <h3 className="modalSubtitle">Clients concernés</h3>
           <h4>/</h4> <br/>
 
-          <h3>Evenements</h3>
+          <h3 className="modalSubtitle">Evenements</h3>
           <h4>/</h4>
-          <IonButton color="success" id="btnNewEvent">Ajouter evenement</IonButton>
+          <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
         </div>
 
         <IonModal isOpen={showEditModal}>
@@ -169,6 +212,34 @@ const FolderDetail: React.FC = () => {
               })}
 
               <IonButton type="submit" className="btnSubmit">Modifier</IonButton>
+            </form>
+          </IonContent>
+        </IonModal>
+
+        <IonModal isOpen={showEventModal}>
+          <IonContent>
+            <IonButton color="danger" id="closeModal" onClick={() => setShowEventModal(false)}>
+              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
+            </IonButton>
+            <h5 className="titleModal">Nouvel Evenement</h5>
+
+            <form className="formFolder">
+              {fieldsEvent.map((fieldEvent, index) => {
+                const {label, required, requiredOptions, props} = fieldEvent;
+                
+                return (
+                  <IonItem key={`form_field_${index}`} lines="full">
+                    <>
+                      <IonLabel position="fixed">{label}</IonLabel>
+                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                    </>
+
+                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                  </IonItem>
+                );
+              })}
+
+              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
         </IonModal>

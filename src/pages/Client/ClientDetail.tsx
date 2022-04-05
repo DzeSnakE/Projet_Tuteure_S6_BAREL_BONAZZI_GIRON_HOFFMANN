@@ -16,11 +16,11 @@ import './ClientDetail.css';
 const ClientDetail: React.FC = () => {
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
-  const [data, setAPIData] = useState([] as any);
 
   let { id } = useParams() as any;
   console.log('id :' + id);
 
+  const [data, setAPIData] = useState([] as any);
   useEffect(() => {
     const fetchData = async () => {
       axios.get(`http://localhost:3000/client/${id}`).then((response) => {
@@ -120,13 +120,13 @@ const ClientDetail: React.FC = () => {
           <h1 className="clientIconName"><IonIcon id="personIcon" slot="icon-only" ios={personOutline} md={personSharp} /> {data.lastName + " " + data.firstName}</h1>
           <h5>Client depuis le {data.createdAt}</h5> <br/>
 
-          <h3>Adresse</h3>
+          <h3 className="modalSubtitle">Adresse</h3>
           <h4>{data.address}</h4> <br/>
 
-          <h3>Date de naissance</h3>
+          <h3 className="modalSubtitle">Date de naissance</h3>
           <h4>{data.birthDate}</h4> <br/>
 
-          <h3>Dossiers associés</h3>
+          <h3 className="modalSubtitle">Dossiers associés</h3>
           <h4>/</h4>
         </div>
 
