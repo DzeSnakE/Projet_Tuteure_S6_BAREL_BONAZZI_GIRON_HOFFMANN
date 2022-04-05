@@ -123,7 +123,7 @@ const Client: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h6> Ici sont répertoriés nos différents Clients </h6>
+        <h5> Ici sont répertoriés nos différents Clients </h5>
         <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
       
         <table>

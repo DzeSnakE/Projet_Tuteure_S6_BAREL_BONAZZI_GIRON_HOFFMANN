@@ -1,4 +1,11 @@
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonIcon } from '@ionic/react';
+import { Link } from 'react-router-dom';
+
+import {
+  personOutline, personSharp,
+  folderOutline, folderSharp
+} from 'ionicons/icons';
+
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -14,11 +21,25 @@ const Home: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h2> Bienvenue sur notre app ! </h2>
-        <h6> de Gestion de Cabinet d'Avocat </h6>
-        <img src="../../public/assets/img/balance_move.gif" alt="Balance gif"/>
+        <h2 id="appTitle"> Bienvenue sur notre app ! </h2>
+        <h5 id="appSubtitle"> de Gestion de Cabinet d'Avocat </h5>
+        <img id="balanceMove" src="/assets/img/balance_move.gif" alt="Balance gif"/>
 
-        <p> &copy; Licence Pro WMCE (2022) <br/>
+        <Link to={'/clients'}>
+          <IonButton className="homeButtonClient" color="primary" size="large">
+            <IonIcon ios={personOutline} md={personSharp} /> &nbsp;
+            Accéder aux Clients
+          </IonButton>
+        </Link>
+
+        <Link to={'/dossiers'}>
+          <IonButton className="homeButtonFolder" color="primary" fill="outline" size="large">
+            <IonIcon ios={folderOutline} md={folderSharp} /> &nbsp;
+            Accéder aux Dossiers
+          </IonButton>
+        </Link>
+
+        <h5 id="groupName"> &copy; Licence Pro WMCE (2022) <br/>
           <a target="_blank" rel="noopener" href="https://github.com/Antoine57650">
             BAREL Antoine
           </a> | &nbsp;
@@ -31,7 +52,7 @@ const Home: React.FC = () => {
           <a target="_blank" rel="noopener" href="https://github.com/EricHoffmann57">
             HOFFMANN Eric
           </a>
-        </p>
+        </h5>
       </IonContent>
     </IonPage>
   );

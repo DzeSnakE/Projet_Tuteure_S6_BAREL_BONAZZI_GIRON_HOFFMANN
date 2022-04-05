@@ -23,10 +23,10 @@ const ClientDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        axios.get(`http://localhost:3000/client/${id}`).then((response) => {
-          setAPIData(response.data);
-          console.log(response.data);
-        })
+      axios.get(`http://localhost:3000/client/${id}`).then((response) => {
+        setAPIData(response.data);
+        console.log(response.data);
+      })
     };
     fetchData();
   }, [])

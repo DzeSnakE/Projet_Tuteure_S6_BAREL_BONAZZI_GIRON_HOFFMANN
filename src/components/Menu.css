@@ -112,7 +112,7 @@ ion-item.selected {
   --color: var(--ion-color-primary);
 } 
 
-img {
-  width: 40%;
-  margin: 20px 0px 20px 30%;
+#balanceMenu {
+  width: 60%;
+  margin: 20px 0px 20px 20%;
 }

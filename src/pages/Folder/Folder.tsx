@@ -137,7 +137,7 @@ const Folder: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h6> Ici sont répertoriés nos différents Dossiers </h6>
+        <h5> Ici sont répertoriés nos différents Dossiers </h5>
 
         <select id="sortByFolder">  
           <option> Afficher affaires en cours et clôturées </option>  

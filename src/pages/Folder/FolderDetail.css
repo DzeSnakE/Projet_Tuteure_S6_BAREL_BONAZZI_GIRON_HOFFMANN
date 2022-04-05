@@ -22,3 +22,8 @@
 .formFolder {
     margin-top: 50px;
 }
+
+#btnNewEvent {
+    margin: 20px 0px 20px 20%;
+    width: 60%;
+}
