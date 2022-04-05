@@ -10,6 +10,13 @@ export class CaseController {
     return this.caseRepository.find();
   }
 
+  async statusFalse(request: Request, response: Response, next: NextFunction) {
+    return this.caseRepository.findBy({status: false});
+  }
+  async statusTrue(request: Request, response: Response, next: NextFunction) {
+    return this.caseRepository.findBy({status: true});
+  }
+
   async one(request: Request, response: Response, next: NextFunction) {
     return this.caseRepository.findOneById(parseInt(request.params.id));
   }
