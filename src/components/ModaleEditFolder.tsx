@@ -14,28 +14,27 @@ import {
 } from "@ionic/react";
 import {closeOutline, closeSharp} from "ionicons/icons";
 
-import clientData from "./../pages/Client/Client.type";
+import folderData from "./../pages/Folder/Folder.type";
 
-interface ModalProps {
+interface ModalFolderProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    client: clientData
+    folder: folderData
 }
 
 const path = require('path');
 const fs = window.require('fs');
 
-const ModalEditClient = (props: ModalProps) => {
-    const {isOpen, client, setIsOpen} = props;
+const ModalEditFolder = (props: ModalFolderProps) => {
+    const {isOpen, folder, setIsOpen} = props;
 
-    const [states, setStates] = useState<clientData>({
-        id: client.id,
-        codeClient: client.codeClient,
-        lastname: client.lastname,
-        firstname: client.firstname,
-        address: client.address,
-        birthdate: client.birthdate,
-        inscription: client.inscription
+    const [states, setStates] = useState<folderData>({
+        code: folder.code,
+        description: folder.description,
+        status: folder.status,
+        startDate: folder.startDate,
+        client: folder.client,
+        endDate: folder.endDate
     });
 
     const handleChange = (e:any, inputName: string) => {
@@ -44,28 +43,27 @@ const ModalEditClient = (props: ModalProps) => {
 
     let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
-    function updateClient(clients:any) {
-        const client: clientData = {
-            "id": states.id,
-            "codeClient":states.codeClient,
-            "lastname":states.lastname,
-            "firstname":states.firstname,
-            "address":states.address,
-            "birthdate":states.birthdate,
-            "inscription":states.inscription
+    function updateFolder(folders:any) {
+        const folder: folderData = {
+            "code": states.code,
+            "description":states.description,
+            "status":states.status,
+            "startDate":states.startDate,
+            "client":states.client,
+            "endDate":states.endDate,
         }
-        let file = path.join(pathName, 'clients.json');
+        let file = path.join(pathName, 'dossiers.json');
         if (fs.existsSync(file)) {
-            clients = fs.readFileSync(file, 'utf8');
-            var list = (clients.length) ? JSON.parse(clients) : [];
+            folders = fs.readFileSync(file, 'utf8');
+            var list = (folders.length) ? JSON.parse(folders) : [];
             var foundId = list.findIndex(function(obj: { id: any; }){
-                return obj.id == client.id
+                return obj.id == folder.code
             });
             if(foundId >0){
-                list[foundId] = client
+                list[foundId] = folder
             }
-            console.log(client.id)
-            console.log(list[client.id])
+            console.log(folder.code)
+            console.log(list[folder.code])
             fs.writeFileSync(file, JSON.stringify(list, null, 2));
             console.log("Le client a été mis à jour! ")
             setIsOpen(false);
@@ -74,9 +72,9 @@ const ModalEditClient = (props: ModalProps) => {
 
 
     useEffect(() => {
-        setStates(client);
+        setStates(folder);
 
-    }, [client.birthdate,client]);
+    }, [folder.endDate,folder]);
 
     return (
         <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
@@ -88,49 +86,41 @@ const ModalEditClient = (props: ModalProps) => {
                                      md={closeSharp}/>
                         </IonButton>
                     </IonButtons>
-                    <IonTitle>Editer un Client</IonTitle>
+                    <IonTitle>Editer un dossier</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
                 <IonItem>
-                    <IonLabel position="floating">Nom</IonLabel>
+                    <IonLabel position="floating">Description</IonLabel>
                     <IonInput type='text'
                               id='name'
                               required
                               name='nom'
-                              value={states.lastname}
-                              onIonChange={e => handleChange(e, "lastname")}/>
+                              value={states.description}
+                              onIonChange={e => handleChange(e, "description")}/>
                 </IonItem>
                 <IonItem>
-                    <IonLabel position="floating">Prénom</IonLabel>
+                    <IonLabel position="floating">Status</IonLabel>
                     <IonInput type='text'
                               id='firstname'
                               required
-                              value={states.firstname}
+                              value={states.status}
                               name='firstname'
-                              onIonChange={e => handleChange(e, "firstname")}/>
+                              onIonChange={e => handleChange(e, "status")}/>
                 </IonItem>
                 <IonItem>
-                    <IonLabel position="floating">Adresse</IonLabel>
+                    <IonLabel position="floating">Date de fin</IonLabel>
                     <IonInput type='text'
                               id='name'
                               required
                               name='address'
-                              value={states.address}
-                              onIonChange={e => handleChange(e, "address")}/>
-                </IonItem>
-                <IonItem>
-                    <IonLabel position="floating">Date de naissance</IonLabel>
-                    <IonInput type='text'
-                              id='bd'
-                              readonly={true}
-                              name='bd'
-                              value={states.birthdate}/>
+                              value={states.endDate}
+                              onIonChange={e => handleChange(e, "endDate")}/>
                 </IonItem>
 
                 <IonButton expand='block'
                            type='submit'
-                           onClick={() =>updateClient(client)}>
+                           onClick={() =>updateFolder(folder)}>
                     Mettre à jour
                 </IonButton>
             </IonContent>
@@ -139,4 +129,4 @@ const ModalEditClient = (props: ModalProps) => {
 }
 
 
-export default ModalEditClient;
+export default ModalEditFolder;
