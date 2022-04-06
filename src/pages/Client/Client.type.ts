@@ -1,5 +1,5 @@
 export default interface ClientData {
-    id?: number,
+    id?: any,
     codeClient: string,
     lastname: string,
     firstname: string,

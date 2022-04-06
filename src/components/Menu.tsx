@@ -30,19 +30,19 @@ interface AppPage {
 const appPages: AppPage[] = [
   {
     title: 'Accueil',
-    url: '/page/Accueil',
+    url: '/',
     iosIcon: homeOutline,
     mdIcon: homeSharp
   },
   {
     title: 'Clients',
-    url: '/page/Clients',
+    url: '/clients',
     iosIcon: personOutline,
     mdIcon: personSharp
   },
   {
     title: 'Dossiers',
-    url: '/page/Dossiers',
+    url: '/dossiers',
     iosIcon: folderOutline,
     mdIcon: folderSharp
   }

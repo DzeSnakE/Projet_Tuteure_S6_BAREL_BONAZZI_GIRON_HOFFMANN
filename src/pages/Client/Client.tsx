@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel} from '@ionic/react';
 import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
@@ -10,22 +10,48 @@ import {
   closeOutline, closeSharp,
   alertCircleOutline
 } from 'ionicons/icons';
-//import nextId from "react-id-generator";
+
 import './Client.css';
 import {
   useIonAlert
 } from '@ionic/react';
+import { Link } from 'react-router-dom';
+
 interface SearchbarChangeEventDetail {
   value?: string;
+}
+
+interface ModalProps {
+  client: clientData
 }
 
 const Client: React.FC = () => {
   const [searchClient, setSearchClient] = useState('');
   const [data, setData]=useState<any[]>([]);
-  const [showViewModal, setShowViewModal] = useState(false);
+  const [props, setProps] = useState<clientData>({
+    id:"",
+    codeClient: "",
+    lastname: "",
+    firstname: "",
+    address: "",
+    birthdate: "",
+    inscription: "",
+  });
+
+const {} = props;
+  const [propsEdit, setPropsEdit] = useState<clientData>({
+    id: props.id,
+    codeClient: props.codeClient,
+    lastname: props.lastname,
+    firstname: props.firstname,
+    address: props.address,
+    birthdate: props.birthdate,
+    inscription: props.inscription,
+  });
+
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<clientData>();
-  const [edit, setEdit] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>("");
   const [message] = useIonAlert();
   const clientsLength = data.length;
   const getData2=()=>{
@@ -56,8 +82,8 @@ const Client: React.FC = () => {
   }
   useEffect(()=>{
     getData()
-  },[])
-
+    setPropsEdit(props)
+  },[setData])
 
   const path = require('path');
   const fs = window.require('fs');
@@ -159,7 +185,7 @@ const Client: React.FC = () => {
       }
     }
   ];
-  
+
   console.log(errors);
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
@@ -216,11 +242,29 @@ const Client: React.FC = () => {
     getData()
   }
 
-  function modClient(client: any) {
-    setSelectedClient(client)
-    setEdit(true)
-    setShowViewModal(true)
+  function addClient() {
+    setShowEditModal(false)
+    setShowCreateModal(true)
   }
+
+  function modClient(client: any) {
+    setShowCreateModal(false)
+    setProps(client)
+    setShowEditModal(true)
+  }
+
+  function updateClient() {
+
+  }
+  const searchText = (e:any) => {
+    setActiveFilter(e.target.value);
+  }
+
+  let dataSearch = data.filter(item => {
+
+    return Object.keys(item).some(key =>
+        item["lastname"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
+    )});
 
   return (
     <IonPage>
@@ -234,8 +278,8 @@ const Client: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
-      
+
+        Filter tasks: <input type="text" value={activeFilter} onChange={searchText}/>
         <table>
           <thead>
             <tr>
@@ -245,13 +289,17 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length>0 && data.map((client: any, index:number) => {
+            {dataSearch && dataSearch.length>0 && dataSearch.map((client: clientData, index:number) => {
               return (
                 <tr key={index}>
                   <td id="name">{client.lastname + " " + client.firstname}</td>
                   <td id="affairs">Affaires associées</td>
                   <td id="actions">
-                    <IonButton  color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
+                    <Link to={`/clients/${client.id}`}>
+                      <IonButton id="eyeButton" color="primary" size="small">
+                        <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                      </IonButton>
+                    </Link>
                     <IonButton  onClick={() => modClient(client)}  color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton  color="danger" size="small"
                                 onClick={() =>  message({
@@ -260,7 +308,7 @@ const Client: React.FC = () => {
                                   message: "Voulez-vous vraiment supprimer ce client ?",
                                   buttons: [
                                     {text: 'Annuler', role: 'cancel'},
-                                    {text: 'Confirmer', handler: () => deleteClient(data, client.id)}
+                                    {text: 'Confirmer', handler: () => deleteClient(client, client.id)}
                                   ],
                                 })
                                 }
@@ -269,79 +317,68 @@ const Client: React.FC = () => {
                     </IonButton>
                   </td>
                 </tr>
-              );
-            })}
+              )})};
           </tbody>
-        </table> 
-
-        <IonModal isOpen={showViewModal}>
+        </table>
+        <IonModal isOpen={showCreateModal} onDidDismiss={() => setShowCreateModal(false)}>
           <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
+            <IonButton color="danger" id="closeModal" onClick={() => setShowCreateModal(false)}>
+              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
             </IonButton>
-            {data && data.length>0 && data.map((client: clientData) => {
-              return (
-
-                <div key={client.id}>
-
-                  <h5 className="titleModal">{"Clients > " + selectedClient?.firstname + " " + selectedClient?.lastname}</h5>
-
-                  <div className="modalButtons">
-                    <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Modifier Client</IonButton>
-                    <IonButton color="danger">Supprimer</IonButton>
-                  </div>
-
-                        <IonAvatar>
-                          <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"/>
-                        </IonAvatar>
-                        <h3>{selectedClient?.codeClient}</h3>
-                        <h3>{selectedClient?.firstname + " " + selectedClient?.lastname}</h3>
-                        <h6>{"client depuis " + selectedClient?.inscription}</h6>
-
-                        <h4>Adresse</h4>
-                        <p>{selectedClient?.address}</p>
-
-                        <h4>Date de naissance</h4>
-                        <p>{selectedClient?.birthdate}</p>
-
-                        <h4>Dossiers associés</h4>
-                        <p>AZ/0987</p>
-                        <hr/>
-
-                </div>
-              );
-            })}
-          </IonContent>
-        </IonModal>
-        <IonModal isOpen={showEditModal}>
-          <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowEditModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
-            </IonButton>
-            <h5 className="titleModal">Création/Edition d'un Client</h5>
+            <h3 className="titleModal">Nouveau Client</h3>
 
             <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
               {fields.map((field, index) => {
-                const {label, required, requiredOptions, props} = field;
-                
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
 
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
+                const {label, required, requiredOptions, props} = field;
+                return (
+                    <IonItem key={`form_field_${index}`} lines="full">
+                      <>
+                        <IonLabel position="fixed">{label}</IonLabel>
+                        <input
+                            className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                      </>
+
+                      {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                    </IonItem>
                 );
               })}
 
-              <IonButton type="submit" id="btnSubmit">Ajouter</IonButton>
+              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
         </IonModal>
+        <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
+        {propsEdit?
+            <IonModal isOpen={showEditModal} onDidDismiss={() => setShowEditModal(false)}>
+              <IonContent>
+                <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
+                  <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
+                </IonButton>
+                <h3 className="titleModal">Modifier Client</h3>
 
-        <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Ajouter un client</IonButton>
+                <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
+                  {fields.map((field, index) => {
+
+                    const {label, required, requiredOptions, props} = field;
+                    return (
+                        <IonItem key={`form_field_${index}`} lines="full">
+                          <>
+                            <IonLabel position="fixed">{label}</IonLabel>
+                            <input
+                                className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                          </>
+
+                          {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                        </IonItem>
+                    );
+                  })}
+
+                  <IonButton type="submit" className="btnSubmit" onClick={() => updateClient()}>Modifier un client</IonButton>
+                </form>
+              </IonContent>
+            </IonModal> : null
+        }
 
         <div className="pagination">
           <a href="#">Précédent</a>

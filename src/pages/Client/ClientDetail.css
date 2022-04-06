@@ -1,0 +1,43 @@
+.app-container {
+    margin-top: 20px;
+}
+
+.clientName {
+    margin: 30px 0px 0px 20px;
+}
+
+#btnDeleteClient, #btnUpdateClient {
+    float: right;
+    margin: 50px 10px 0px 0px;
+}
+
+.clientIconName {
+    margin-top: 110px;
+}
+
+#personIcon {
+    font-size: 80px;
+}
+
+.customers {
+    margin-left: 20px;
+}
+
+.titleModal {
+    margin-top: 100px;
+}
+
+.formClient {
+    margin-top: 50px;
+}
+
+.inputForm {
+    height: 30px;
+    border-radius: 4px;
+    margin: 40px 0px 40px 5px;
+}
+
+.btnSubmit {
+    float: right;
+    margin: 40px;
+}
