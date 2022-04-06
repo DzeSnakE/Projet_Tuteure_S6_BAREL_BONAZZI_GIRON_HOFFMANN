@@ -1,0 +1,30 @@
+#appTitle {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#appSubtitle {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#balanceMove {
+    width: 70%;
+    margin: 40px 0px 0px 15%;
+}
+
+.homeButtonClient {
+    margin-top: 80px;
+    width: 100%;
+}
+
+.homeButtonFolder {
+    margin-top: 40px;
+    width: 100%;
+}
+
+#groupName {
+    margin-top: 100px;
+    text-align: center;
+    line-height: 1.5;
+}
