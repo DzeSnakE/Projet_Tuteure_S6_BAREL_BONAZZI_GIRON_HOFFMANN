@@ -1,9 +1,5 @@
-#titlePageClient {
+#titlePageClient, #labelSearch {
     margin: 20px 0px 0px 10px;
-}
-
-#searchBar {
-    margin-top: 20px;
 }
 
 table {

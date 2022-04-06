@@ -52,7 +52,7 @@ const ClientDetail: React.FC = () => {
         maxLength: 20
       },
       props: {
-        name: "lastname",
+        name: "lastName",
         type: "text",
         placeholder: "Doe"
       }
@@ -65,7 +65,7 @@ const ClientDetail: React.FC = () => {
         maxLength: 20
       },
       props: {
-        name: "firstname",
+        name: "firstName",
         type: "text",
         placeholder: "John"
       }
@@ -90,7 +90,7 @@ const ClientDetail: React.FC = () => {
         minDate: '01/01/2000'
       },
       props: {
-        name: "birthdate",
+        name: "birthDate",
         type: "date",
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"

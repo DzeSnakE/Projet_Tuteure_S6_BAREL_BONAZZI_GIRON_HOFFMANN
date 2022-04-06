@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
 
 import {
   folderOutline, folderSharp,
@@ -17,21 +17,21 @@ const FolderDetail: React.FC = () => {
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [message] = useIonAlert();
   const [data, setAPIData] = useState([] as any);
+
 
   let { id } = useParams() as any;
   console.log('id :' + id);
 
   useEffect(() => {
     const fetchData = async () => {
-        axios.get(`http://localhost:3000/case/${id}`).then((response) => {
+        axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
           setAPIData(response.data);
           console.log(response.data);
         })
     };
     fetchData();
-  }, [id])
+  }, [])
 
   const onDelete = () => {
     console.log(id)
@@ -149,11 +149,11 @@ const FolderDetail: React.FC = () => {
       props: {
         name: "description",
         type: "text",
-        placeholder: "Description du dossier ..."
+        placeholder: "Description de l'evenement ..."
       }
     }
   ];
-  
+
   return (
     <IonPage>
       <IonHeader>
@@ -169,17 +169,7 @@ const FolderDetail: React.FC = () => {
         <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data.code}</h3>
 
         <div className="app-button">
-          <IonButton onClick={() => message({
-            header: "Supprimer un dossier",
-            message: "Voulez-vous vraiment supprimer ce dossier ?",
-            buttons: [
-              {text: 'Annuler', role: 'cancel'},
-              {text: 'Confirmer', handler: () => onDelete()} 
-            ]
-            })
-            } id="btnDeleteFolder" color="danger"> Supprimer
-          </IonButton> 
-
+          <IonButton id="btnDeleteFolder" onClick={onDelete} color="danger">Supprimer</IonButton>
           <IonButton id="btnUpdateFolder" onClick={() => setShowEditModal(true)}>Modifier</IonButton>
         </div>
 
@@ -192,10 +182,34 @@ const FolderDetail: React.FC = () => {
           <h4>{data.description}</h4> <br/>
 
           <h3 className="modalSubtitle">Clients concernés</h3>
-          <h4>/</h4> <br/>
+          {data.map((data : any) => {
+          return(
+          <div>
+          {data["clients"].map((clients :any )=>{
+             console.log(clients.firstName)
+             console.log(clients.lastName)
+            return (
+                <p>{clients.firstName} {clients.lastName}</p>
+             )
+          })}
+          </div>
+          )
+          })}
+           <br/>
 
           <h3 className="modalSubtitle">Evenements</h3>
-          <h4>/</h4>
+          {data.map((data : any) => {
+          return(<div>
+          {data["event"].map((event :any )=>{
+          console.log(event.description)
+          return (
+          <p>{event.date} - {event.description} - {event.time}</p>
+          )
+          })}
+          </div>
+          )
+          })}
+
           <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
         </div>
 
@@ -209,7 +223,7 @@ const FolderDetail: React.FC = () => {
             <form className="formFolder">
               {fields.map((field, index) => {
                 const {label, required, requiredOptions, props} = field;
-                
+
                 return (
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>
@@ -237,7 +251,7 @@ const FolderDetail: React.FC = () => {
             <form className="formFolder">
               {fieldsEvent.map((fieldEvent, index) => {
                 const {label, required, requiredOptions, props} = fieldEvent;
-                
+
                 return (
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>

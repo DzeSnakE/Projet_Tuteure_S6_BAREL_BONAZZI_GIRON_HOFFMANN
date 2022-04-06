@@ -21,6 +21,7 @@ export class CaseController {
     async caseWithEvent(request: Request, response: Response, next: NextFunction) {
         return this.caseRepository.createQueryBuilder("case")
             .leftJoinAndSelect("case.event", "event")
+            .leftJoinAndSelect("case.clients", "client")
             .where("case.id = :id", {id: request.params.id})
             .getMany();
     }

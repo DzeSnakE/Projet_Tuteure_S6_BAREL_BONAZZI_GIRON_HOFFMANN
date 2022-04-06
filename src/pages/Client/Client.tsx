@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -14,12 +14,16 @@ import {
 } from 'ionicons/icons';
 
 import Pagination from '../../components/Pagination'
+import clientData from './Client.type';
+import ModalEditClient from "../../components/ModalEditClient";
 import './Client.css';
 
 const Client: React.FC = () => {
   const [APIData, setAPIData] = useState<any[]>([]);
-  const [searchClient, setSearchClient] = useState('');
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<clientData>();
+  const [activeFilter, setActiveFilter] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [message] = useIonAlert();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +83,7 @@ const Client: React.FC = () => {
         maxLength: 20
       },
       props: {
-        name: "lastname",
+        name: "lastName",
         type: "text",
         placeholder: "Doe"
       }
@@ -92,7 +96,7 @@ const Client: React.FC = () => {
         maxLength: 20
       },
       props: {
-        name: "firstname",
+        name: "firstName",
         type: "text",
         placeholder: "John"
       }
@@ -117,13 +121,33 @@ const Client: React.FC = () => {
         minDate: '01/01/2000'
       },
       props: {
-        name: "birthdate",
+        name: "birthDate",
         type: "date",
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"
       }
     }
   ];
+
+  function modClient(client: any) {
+    setSelectedClient(client)
+    setIsEdit(true)
+  }
+
+  function addClient() {
+    setIsEdit(false)
+    setIsOpen(true)
+  }
+
+  const searchText = (e:any) => {
+    setActiveFilter(e.target.value);
+  }
+
+  let dataSearch = APIData.filter(item => {
+    return Object.keys(item).some(key =>
+      item["lastName"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
+    )
+  });
   
   return (
     <IonPage>
@@ -137,9 +161,9 @@ const Client: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h5 id="titlePageClient"> Ici sont répertoriés nos différents Clients </h5>
-        <IonSearchbar id="searchBar" value={searchClient} onIonChange={e => setSearchClient(e.detail.value!)} placeholder="Rechercher un Client ..."/>
-      
+        <h5 id="titlePageClient"> Ici sont répertoriés nos différents Clients </h5> <br/>
+        <label id="labelSearch">Rechercher par nom :</label> <input type="text" placeholder="Dupont" value={activeFilter} onChange={searchText}/>
+
         <table>
           <thead>
             <tr>
@@ -149,7 +173,7 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {currentPosts.map((data) => {
+            {dataSearch && dataSearch.length>0 && dataSearch.map((data: clientData, index: number) => {
               return (
                 <tr>
                   <td id="name">{data.lastName + " " + data.firstName}</td>
@@ -161,7 +185,7 @@ const Client: React.FC = () => {
                       </IonButton>
                     </Link>
 
-                    <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                    <IonButton  onClick={() => modClient(data)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
                     <IonButton onClick={() => message({
                       header: "Supprimer un client",
                       message: "Voulez-vous vraiment supprimer ce client ?",
@@ -180,12 +204,20 @@ const Client: React.FC = () => {
           </tbody>
         </table> 
 
-        <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Ajouter un client</IonButton>
+        <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
+        {selectedClient ? (
+            <ModalEditClient
+                client={selectedClient}
+                isOpen={isEdit}
+                setIsOpen={() => setIsEdit(false)}
+            />
+        ) : null}
+
         <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
 
-        <IonModal isOpen={showEditModal}>
+        <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
           <IonContent>
-            <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
+            <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
             </IonButton>
             <h3 className="titleModal">Nouveau Client</h3>

@@ -31,12 +31,13 @@ const Folder: React.FC = () => {
   console.log('id :' + id);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/case/all/client`)
-      .then((response) => {
-        console.log(response.data)
-        setAPIData(response.data);
-      })
-  }, []);
+    const fetchData = async () => {
+        axios.get('http://localhost:3000/case/all/client').then((response) => {
+            setAPIData(response.data);
+        }).then(() => getData())
+    };
+    fetchData();
+  },[])
 
   const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
     let { id, code, description, startDate, status, endDate} = data;
@@ -163,7 +164,7 @@ const Folder: React.FC = () => {
       item["code"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
     )
   });
-
+  
   return (
     <IonPage>
       <IonHeader>
@@ -185,7 +186,7 @@ const Folder: React.FC = () => {
         </select> <br/> <br/>
 
         <label id="labelSearch">Rechercher par code :</label> <input type="text" placeholder="aaaa-bbbb-cccc-dddd" value={activeFilter} onChange={searchText}/>
-
+        
         <table>
           <thead>
             <tr>
@@ -201,12 +202,7 @@ const Folder: React.FC = () => {
                 <tr>
                   <td id="code">{data.code}</td>
                   <td id="statut">{data.status ? 'Clôturé':'En cours'}</td>
-                  <td id="clients"> 
-                    {data.clients.map((client : any) => {
-                      return (
-                        <p>{client.firstName} {client.lastName}</p>
-                      )
-                    })}
+                  <td id="clients">/
                   </td>
                   <td id="actions">
                     <Link to={'/dossiers/' + data.id}>
@@ -232,7 +228,7 @@ const Folder: React.FC = () => {
               );
             })}
           </tbody>
-        </table>       
+        </table>    
 
         <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Ajouter un dossier</IonButton>   
         <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
