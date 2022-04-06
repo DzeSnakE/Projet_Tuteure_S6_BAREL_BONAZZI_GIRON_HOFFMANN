@@ -39,7 +39,7 @@ const Client: React.FC = () => {
         }).then(() => getData())
     };
     fetchData();
-  },[])
+  },[id])
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
     let { id, firstName, lastName, address, birthDate} = data;
@@ -61,6 +61,7 @@ const Client: React.FC = () => {
     axios.delete(`http://localhost:3000/client/${id}`)
     .then(() => {
         getData();
+        window.location.reload();
     })
   }
   
@@ -128,6 +129,15 @@ const Client: React.FC = () => {
       }
     }
   ];
+
+  const onSubmit = (data: any, e:any) => {
+    e.preventDefault();
+    console.log(data);
+    setData(data);
+    setIsOpen(false);
+    setIsEdit(false);
+    getData();
+  }
 
   function modClient(client: any) {
     setSelectedClient(client)
@@ -218,23 +228,24 @@ const Client: React.FC = () => {
         <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
           <IonContent>
             <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
+              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
             </IonButton>
             <h3 className="titleModal">Nouveau Client</h3>
 
-            <form className="formClient">
+            <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
               {fields.map((field, index) => {
-                const {label, required, requiredOptions, props} = field;
-                
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
 
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
+                const {label, required, requiredOptions, props} = field;
+                return (
+                    <IonItem key={`form_field_${index}`} lines="full">
+                      <>
+                        <IonLabel position="fixed">{label}</IonLabel>
+                        <input
+                            className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                      </>
+
+                      {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                    </IonItem>
                 );
               })}
 

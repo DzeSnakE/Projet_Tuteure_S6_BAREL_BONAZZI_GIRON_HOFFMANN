@@ -36,7 +36,7 @@ const Folder: React.FC = () => {
         console.log(response.data)
         setAPIData(response.data);
       })
-  }, []);
+  }, [id]);
 
   const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
     let { id, code, description, startDate, status, endDate} = data;
