@@ -75,7 +75,7 @@ const ClientDetail: React.FC = () => {
                     </IonButtons>
                     {data && data.length>0 && data.map((data: clientData) => {
                         return(
-                            <IonTitle><IonTitle>{"Detail de " + data.lastname + " " + data.firstname}</IonTitle></IonTitle>
+                            <IonTitle>{"Detail de " + data.lastname + " " + data.firstname}</IonTitle>
                         )})}
                 </IonToolbar>
             </IonHeader>

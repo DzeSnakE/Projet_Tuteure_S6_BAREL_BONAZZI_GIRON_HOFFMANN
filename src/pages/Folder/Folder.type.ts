@@ -1,5 +1,6 @@
 export default interface FolderData {
-    code: any,
+    id?: any,
+    code: string,
     description: string,
     status: string,
     startDate: string,

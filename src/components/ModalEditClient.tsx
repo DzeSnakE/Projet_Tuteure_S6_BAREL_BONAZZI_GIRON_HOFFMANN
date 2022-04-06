@@ -61,7 +61,7 @@ const ModalEditClient = (props: ModalProps) => {
             var foundId = list.findIndex(function(obj: { id: any; }){
                 return obj.id == client.id
             });
-            if(foundId >0){
+            if(foundId !== -1){
                 list[foundId] = client
             }
             console.log(client.id)
@@ -95,9 +95,9 @@ const ModalEditClient = (props: ModalProps) => {
                 <IonItem>
                     <IonLabel position="floating">Nom</IonLabel>
                     <IonInput type='text'
-                              id='name'
+                              id='lastname'
                               required
-                              name='nom'
+                              name='lastname'
                               value={states.lastname}
                               onIonChange={e => handleChange(e, "lastname")}/>
                 </IonItem>
@@ -137,6 +137,4 @@ const ModalEditClient = (props: ModalProps) => {
         </IonModal>
     )
 }
-
-
 export default ModalEditClient;

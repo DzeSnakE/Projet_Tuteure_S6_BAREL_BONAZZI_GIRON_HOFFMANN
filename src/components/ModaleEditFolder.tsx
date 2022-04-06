@@ -29,6 +29,7 @@ const ModalEditFolder = (props: ModalFolderProps) => {
     const {isOpen, folder, setIsOpen} = props;
 
     const [states, setStates] = useState<folderData>({
+        id: folder.id,
         code: folder.code,
         description: folder.description,
         status: folder.status,
@@ -45,6 +46,7 @@ const ModalEditFolder = (props: ModalFolderProps) => {
 
     function updateFolder(folders:any) {
         const folder: folderData = {
+            "id": states.id,
             "code": states.code,
             "description":states.description,
             "status":states.status,
@@ -57,15 +59,15 @@ const ModalEditFolder = (props: ModalFolderProps) => {
             folders = fs.readFileSync(file, 'utf8');
             var list = (folders.length) ? JSON.parse(folders) : [];
             var foundId = list.findIndex(function(obj: { id: any; }){
-                return obj.id == folder.code
+                return obj.id == folder.id
             });
-            if(foundId >0){
+            if(foundId !== -1){
                 list[foundId] = folder
             }
-            console.log(folder.code)
-            console.log(list[folder.code])
+            console.log(folder.id)
+            console.log(list[folder.id])
             fs.writeFileSync(file, JSON.stringify(list, null, 2));
-            console.log("Le client a été mis à jour! ")
+            console.log("Le dossier a été mis à jour! ")
             setIsOpen(false);
         }
     }
@@ -95,29 +97,19 @@ const ModalEditFolder = (props: ModalFolderProps) => {
                     <IonInput type='text'
                               id='name'
                               required
-                              name='nom'
+                              name='description'
                               value={states.description}
                               onIonChange={e => handleChange(e, "description")}/>
                 </IonItem>
                 <IonItem>
-                    <IonLabel position="floating">Status</IonLabel>
-                    <IonInput type='text'
-                              id='firstname'
-                              required
-                              value={states.status}
-                              name='firstname'
-                              onIonChange={e => handleChange(e, "status")}/>
-                </IonItem>
-                <IonItem>
                     <IonLabel position="floating">Date de fin</IonLabel>
                     <IonInput type='text'
-                              id='name'
+                              id='endDate'
                               required
-                              name='address'
+                              name='endDate'
                               value={states.endDate}
                               onIonChange={e => handleChange(e, "endDate")}/>
                 </IonItem>
-
                 <IonButton expand='block'
                            type='submit'
                            onClick={() =>updateFolder(folder)}>
@@ -127,6 +119,5 @@ const ModalEditFolder = (props: ModalFolderProps) => {
         </IonModal>
     )
 }
-
-
 export default ModalEditFolder;
+

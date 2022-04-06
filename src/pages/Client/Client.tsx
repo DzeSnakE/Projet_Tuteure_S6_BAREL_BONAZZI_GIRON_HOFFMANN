@@ -5,10 +5,9 @@ import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, Ion
 import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
-  createOutline, createSharp,
   trashOutline, trashSharp,
   closeOutline, closeSharp,
-  alertCircleOutline
+  alertCircleOutline, pencilSharp, pencilOutline
 } from 'ionicons/icons';
 
 import './Client.css';
@@ -164,7 +163,6 @@ const Client: React.FC = () => {
     }
   ];
 
-  console.log(errors);
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
   const onSubmit = (data: any, e:any) => {
@@ -275,7 +273,10 @@ const Client: React.FC = () => {
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
                     </Link>
-                    <IonButton  onClick={() => modClient(client)}  color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                    <IonButton color='primary' onClick={() => {
+                      modClient(client)
+                    }}>
+                      <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
                     <IonButton  color="danger" size="small"
                                 onClick={() =>  message({
                                   cssClass: 'my-css',

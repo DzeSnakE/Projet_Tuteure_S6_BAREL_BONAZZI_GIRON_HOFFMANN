@@ -1,22 +1,11 @@
 [
   {
+    "id": 0,
     "code": "EZ/0987",
-    "description": "Vol de voiture",
+    "description": "vol de slip",
     "status": "pending",
     "startDate": "06/04/2022",
-    "client": [
-      "Beaugosse Alex",
-      "Blanc Michel"
-    ],
-    "endDate": "",
-    "contrat": [
-      {
-        "code": "EZ/0987",
-        "id": [
-          "Beaugosse Alex",
-          "Blanc Michel"
-        ]
-      }
-    ]
+    "client": [],
+    "endDate": ""
   }
 ]

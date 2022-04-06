@@ -10,10 +10,14 @@ import {
   createOutline, createSharp,
   trashOutline, trashSharp,
   closeOutline, closeSharp,
-  alertCircleOutline
+  alertCircleOutline, pencilOutline, pencilSharp
 } from 'ionicons/icons';
 
 import './Folder.css';
+import folderData from "./Folder.type";
+
+import { Link } from 'react-router-dom';
+import ModalEditFolder from "../../components/ModaleEditFolder";
 
 
 interface SearchbarChangeEventDetail {
@@ -23,10 +27,10 @@ interface SearchbarChangeEventDetail {
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
   const [data, setData]=useState<any[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState<folderData>();
 
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [message] = useIonAlert();
 
   const getData2=()=>{
@@ -37,27 +41,27 @@ const Folder: React.FC = () => {
     })
   }
 
-  const getData = ()=>{
-    Promise.all([
-      fetch('clients.json'),
-      fetch('dossiers.json')
-    ]).then(function (responses) {
-      // Get a JSON object from each of the responses
-      return Promise.all(responses.map(function (response) {
-        return response.json();
-      }));
-    }).then(function (data) {
+  const getData=()=>{
+
+    fetch('dossiers.json'
+        ,{
+          headers : {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+          }
+        }).then(function(response){
+      console.log(response)
+      return response.json();
+    }).then(function(data) {
       console.log(data);
       setData(data)
     }).catch(function (error) {
-      // if there's an error, log it
       console.log(error);
     });
   }
-
   useEffect(()=>{
     getData()
-  },[])
+  },[isOpen, isEdit, setData])
 
 
   function refreshList() {
@@ -142,25 +146,22 @@ const Folder: React.FC = () => {
     }
   ];
 
-  console.log(errors);
+  const dataLength = data.length;
+
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
+
 
   const onSubmit = (data: any, e:any) => {
     let file = path.join(pathName, data.filename)
-
+    const id = dataLength
     data = {
+      "id": id,
       "code": data.code,
       "description": data.description,
       "status": data.status,
       "startDate": data.startDate,
       "client": data.client,
       "endDate": data.endDate,
-      "contrat": [
-        {
-          "code": data.code,
-          "id": data.client
-        }
-      ]
     }
 
     console.log(data);
@@ -179,6 +180,7 @@ const Folder: React.FC = () => {
         else list = [data]
         fs.writeFileSync(file, JSON.stringify(list, null, 2));
         console.log("Un nouveau dossier a été ajouté !")
+      e.target.reset()
     }
     e.target.reset()
     getData()
@@ -201,6 +203,16 @@ const Folder: React.FC = () => {
     getData()
   }
 
+
+  function modFolder(folder: any) {
+    setSelectedFolder(folder)
+    setIsEdit(true)
+  }
+
+  function addFolder() {
+    setIsEdit(false)
+    setIsOpen(true)
+  }
 
   return (
     <IonPage>
@@ -233,15 +245,22 @@ const Folder: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-          {data && data.length>0 && data[1].map((folder: any, index: number) => {
+          {data && data.length>0 && data.map((folder: folderData, index: number) => {
             return (
                <tr key={index}>
                 <td id="code">{folder.code}</td>
                   <td id="statut">{folder.status}</td>
-                  <td id="clients">{[...folder.client]+ ","}</td>
+                  <td id="clients">{folder.client}</td>
                   <td id="actions">
-                    <IonButton onClick={() => setShowViewModal(true)} id="eyeButton" color="primary" size="small"><IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} /></IonButton>
-                    <IonButton onClick={() => setShowEditModal(true)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                    <Link to={`/dossiers/${folder.id}`}>
+                      <IonButton id="eyeButton" color="primary" size="small">
+                        <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                      </IonButton>
+                    </Link>
+                    <IonButton color='primary' onClick={() => {
+                      modFolder(folder)
+                    }}>
+                      <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
                     <IonButton  color="danger" size="small"
                                 onClick={() =>  message({
                                   cssClass: 'my-css',
@@ -261,67 +280,28 @@ const Folder: React.FC = () => {
             );
           })}
           </tbody>
-        </table> 
-
-        <IonModal isOpen={showViewModal}>
+        </table>
+        <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
           <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowViewModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
+            <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
+              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
             </IonButton>
-            {data && data.length>0 && data[1].map((folder: any, index: number) => {
-              return (
-                <div key={index}>
-                  <h5 className="titleModal">{"Dossier > " + folder.code}</h5>
-
-                  <div className="modalButtons" key={index}>
-                    <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Modifier Dossier</IonButton>
-                    <IonButton color="danger">Supprimer</IonButton>
-                  </div>
-
-                  <h3>{folder.code}</h3>
-                  <h6>{folder.status}</h6>
-                  <h6>{"Affaire ouverte le " + folder.startDate}</h6>
-
-                  <h4>Description</h4>
-                  <p>{folder.description}</p>
-
-                  <h4>Clients concernés</h4>
-
-                  <p>{[...folder.client]+ ","}</p>
-
-                  <h4>Evenements</h4>
-                  <ul>
-                    <li>/</li>
-                  </ul>
-                  <IonButton id="btnNewEvent">Ajouter un évènement</IonButton>
-
-                  <h4>/</h4>
-                </div> 
-              );
-            })}
-          </IonContent>
-        </IonModal>
-
-        <IonModal isOpen={showEditModal}>
-          <IonContent>
-            <IonButton id="closeModal" onClick={() => setShowEditModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
-            </IonButton>
-            <h5 className="titleModal">Création d'un Dossier</h5>
+            <h3 className="titleModal">Nouveau Dossier</h3>
 
             <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
               {fields.map((field, index) => {
-                const {label, required, requiredOptions, props} = field;
-                
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
 
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
+                const {label, required, requiredOptions, props} = field;
+                return (
+                    <IonItem key={`form_field_${index}`} lines="full">
+                      <>
+                        <IonLabel position="fixed">{label}</IonLabel>
+                        <input
+                            className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                      </>
+
+                      {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                    </IonItem>
                 );
               })}
               <IonItem>
@@ -335,19 +315,25 @@ const Folder: React.FC = () => {
                 <IonLabel position="fixed">Nom du client</IonLabel>
                 <select {...register("client")} onChange={refreshList} multiple={true}>
                   <option>--sélectionnez--</option>
-                  {data && data.length>0 && data[0].map((user: any) => {
+                  {data && data.length>0 && data.map((user: any) => {
                     return (
                         <option key={user.id} value={user.lastname + " " + user.firstname}>{user.lastname + " " + user.firstname}</option>
                     );
                   })})
                 </select>
               </IonItem>
-              <IonButton type="submit" id="btnSubmit">Ajouter</IonButton>
+              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
         </IonModal>
-
-        <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Ajouter un dossier</IonButton>
+        <IonButton id="btnNewClient" onClick={() => addFolder()}>Ajouter un dossier</IonButton>
+        {selectedFolder ? (
+            <ModalEditFolder
+                folder={selectedFolder}
+                isOpen={isEdit}
+                setIsOpen={() => setIsEdit(false)}
+            />
+        ) : null}
 
         <div className="pagination">
           <a href="#">Précédent</a>
