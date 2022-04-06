@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel} from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel} from '@ionic/react';
 import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
@@ -16,41 +16,21 @@ import {
   useIonAlert
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
+import ModalEditClient from "../../components/ModalEditClient";
 
 interface SearchbarChangeEventDetail {
   value?: string;
 }
 
-interface ModalProps {
-  client: clientData
-}
 
 const Client: React.FC = () => {
-  const [searchClient, setSearchClient] = useState('');
+
   const [data, setData]=useState<any[]>([]);
-  const [props, setProps] = useState<clientData>({
-    id:"",
-    codeClient: "",
-    lastname: "",
-    firstname: "",
-    address: "",
-    birthdate: "",
-    inscription: "",
-  });
-
-const {} = props;
-  const [propsEdit, setPropsEdit] = useState<clientData>({
-    id: props.id,
-    codeClient: props.codeClient,
-    lastname: props.lastname,
-    firstname: props.firstname,
-    address: props.address,
-    birthdate: props.birthdate,
-    inscription: props.inscription,
-  });
-
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<clientData>();
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [message] = useIonAlert();
   const clientsLength = data.length;
@@ -82,8 +62,7 @@ const {} = props;
   }
   useEffect(()=>{
     getData()
-    setPropsEdit(props)
-  },[setData])
+  },[isOpen, isEdit,setData])
 
   const path = require('path');
   const fs = window.require('fs');
@@ -242,20 +221,17 @@ const {} = props;
     getData()
   }
 
-  function addClient() {
-    setShowEditModal(false)
-    setShowCreateModal(true)
-  }
 
   function modClient(client: any) {
-    setShowCreateModal(false)
-    setProps(client)
-    setShowEditModal(true)
+
+    setSelectedClient(client)
+    setIsEdit(true)
+  }
+  function addClient() {
+    setIsEdit(false)
+    setIsOpen(true)
   }
 
-  function updateClient() {
-
-  }
   const searchText = (e:any) => {
     setActiveFilter(e.target.value);
   }
@@ -320,9 +296,9 @@ const {} = props;
               )})};
           </tbody>
         </table>
-        <IonModal isOpen={showCreateModal} onDidDismiss={() => setShowCreateModal(false)}>
+        <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
           <IonContent>
-            <IonButton color="danger" id="closeModal" onClick={() => setShowCreateModal(false)}>
+            <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
               <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
             </IonButton>
             <h3 className="titleModal">Nouveau Client</h3>
@@ -349,36 +325,13 @@ const {} = props;
           </IonContent>
         </IonModal>
         <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
-        {propsEdit?
-            <IonModal isOpen={showEditModal} onDidDismiss={() => setShowEditModal(false)}>
-              <IonContent>
-                <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
-                  <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
-                </IonButton>
-                <h3 className="titleModal">Modifier Client</h3>
-
-                <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
-                  {fields.map((field, index) => {
-
-                    const {label, required, requiredOptions, props} = field;
-                    return (
-                        <IonItem key={`form_field_${index}`} lines="full">
-                          <>
-                            <IonLabel position="fixed">{label}</IonLabel>
-                            <input
-                                className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                          </>
-
-                          {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                        </IonItem>
-                    );
-                  })}
-
-                  <IonButton type="submit" className="btnSubmit" onClick={() => updateClient()}>Modifier un client</IonButton>
-                </form>
-              </IonContent>
-            </IonModal> : null
-        }
+        {selectedClient ? (
+            <ModalEditClient
+                client={selectedClient}
+                isOpen={isEdit}
+                setIsOpen={() => setIsEdit(false)}
+            />
+        ) : null}
 
         <div className="pagination">
           <a href="#">Précédent</a>
