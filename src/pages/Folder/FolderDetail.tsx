@@ -2,7 +2,7 @@ import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
+import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
 
 import {
@@ -18,6 +18,7 @@ const FolderDetail: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [data, setAPIData] = useState([] as any);
+
 
   let { id } = useParams() as any;
   console.log('id :' + id);
@@ -181,17 +182,32 @@ const FolderDetail: React.FC = () => {
           <h4>{data.description}</h4> <br/>
 
           <h3 className="modalSubtitle">Clients concernés</h3>
-          <h4>/</h4> <br/>
+          {data.map((data : any) => {
+          return(
+          <div>
+          {data["clients"].map((clients :any )=>{
+             console.log(clients.firstName)
+             console.log(clients.lastName)
+            return (
+                <p>{clients.firstName} {clients.lastName}</p>
+             )
+          })}
+          </div>
+          )
+          })}
+           <br/>
 
           <h3 className="modalSubtitle">Evenements</h3>
           {data.map((data : any) => {
-          for(let i = 0; i < data.event.length; i++) {
-            return (
-              <div>
-                <p>{data.event[i].description}</p>
-              </div>
-            )
-            }
+          return(<div>
+          {data["event"].map((event :any )=>{
+          console.log(event.description)
+          return (
+          <p>{event.date} - {event.description} - {event.time}</p>
+          )
+          })}
+          </div>
+          )
           })}
 
           <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
@@ -207,7 +223,7 @@ const FolderDetail: React.FC = () => {
             <form className="formFolder">
               {fields.map((field, index) => {
                 const {label, required, requiredOptions, props} = field;
-                
+
                 return (
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>
@@ -235,7 +251,7 @@ const FolderDetail: React.FC = () => {
             <form className="formFolder">
               {fieldsEvent.map((fieldEvent, index) => {
                 const {label, required, requiredOptions, props} = fieldEvent;
-                
+
                 return (
                   <IonItem key={`form_field_${index}`} lines="full">
                     <>
