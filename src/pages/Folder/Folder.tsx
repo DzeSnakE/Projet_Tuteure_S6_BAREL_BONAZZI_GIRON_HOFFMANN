@@ -171,6 +171,7 @@ const Folder: React.FC = () => {
           </thead>
           <tbody>
             {APIData.map((data) => {
+            console.log(data)
               return (
                 <tr>
                   <td id="code">{data.code}</td>
