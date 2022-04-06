@@ -27,13 +27,13 @@ const Client: React.FC = () => {
 
   const [data, setData]=useState<any[]>([]);
   const [selectedClient, setSelectedClient] = useState<clientData>();
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [message] = useIonAlert();
   const clientsLength = data.length;
+
   const getData2=()=>{
     fetch('http://localhost:5000/api/client')
     .then(res=>res.json())
@@ -56,13 +56,12 @@ const Client: React.FC = () => {
           console.log(data);
           setData(data)
     }).catch(function (error) {
-      // if there's an error, log it
       console.log(error);
     });
   }
   useEffect(()=>{
     getData()
-  },[isOpen, isEdit,setData])
+  },[isOpen, isEdit, setData])
 
   const path = require('path');
   const fs = window.require('fs');
@@ -255,7 +254,7 @@ const Client: React.FC = () => {
 
       <IonContent className="ion-padding">
 
-        Filter tasks: <input type="text" value={activeFilter} onChange={searchText}/>
+        Tri par nom: <input type="text" value={activeFilter} onChange={searchText}/>
         <table>
           <thead>
             <tr>
