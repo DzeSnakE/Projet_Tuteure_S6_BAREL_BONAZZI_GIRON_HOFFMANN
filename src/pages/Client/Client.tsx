@@ -13,24 +13,29 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 
+import Pagination from '../../components/Pagination'
 import './Client.css';
 
 const Client: React.FC = () => {
+  const [APIData, setAPIData] = useState<any[]>([]);
   const [searchClient, setSearchClient] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [message] = useIonAlert();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(5);
+
   let { id } = useParams() as any;
   console.log('id :' + id);
 
-  const [APIData, setAPIData] = useState<any[]>([]);
   useEffect(() => {
-    axios.get(`http://localhost:3000/client/all/case`)
-      .then((response) => {
-        console.log(response.data)
-        setAPIData(response.data);
-      })
-  }, []);
+    const fetchData = async () => {
+        axios.get('http://localhost:3000/client/all/case').then((response) => {
+            setAPIData(response.data);
+        }).then(() => getData())
+    };
+    fetchData();
+  },[])
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
     let { id, firstName, lastName, address, birthDate} = data;
@@ -42,18 +47,23 @@ const Client: React.FC = () => {
   }
 
   const getData = () => {
-    axios.get(`http://localhost:3000/client`)
-      .then((getData) => {
+    axios.get('http://localhost:3000/client')
+    .then((getData) => {
         setAPIData(getData.data);
-      })
-  }
-
-  const onDelete = (id: any) => {
-    axios.delete(`http://localhost:3000/client/${id}`)
-    .then(() => {
-      getData();
     })
   }
+  
+  const onDelete = (id:any) => {
+    axios.delete(`http://localhost:3000/client/${id}`)
+    .then(() => {
+        getData();
+    })
+  }
+  
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = APIData.slice(indexOfFirstPost, indexOfLastPost)
+  const paginate = (pageNumbers:any) => setCurrentPage(pageNumbers)
 
   const {register, handleSubmit, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -139,7 +149,7 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {APIData.map((data) => {
+            {currentPosts.map((data) => {
               return (
                 <tr>
                   <td id="name">{data.lastName + " " + data.firstName}</td>
@@ -164,11 +174,14 @@ const Client: React.FC = () => {
                         <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
                     </IonButton> 
                   </td>
-                </tr>
-              );  
+                </tr> 
+              )
             })}
           </tbody>
         </table> 
+
+        <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Ajouter un client</IonButton>
+        <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
@@ -198,15 +211,6 @@ const Client: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        <IonButton id="btnNewClient" onClick={() => setShowEditModal(true)}>Ajouter un client</IonButton>
-
-        <div className="pagination">
-          <a href="#">Précédent</a>
-          <a href="#" className="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
-          <a href="#">Suivant</a>
-        </div>
       </IonContent>
     </IonPage>
   );

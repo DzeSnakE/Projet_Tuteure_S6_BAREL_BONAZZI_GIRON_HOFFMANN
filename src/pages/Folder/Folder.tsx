@@ -1,6 +1,6 @@
 import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonSearchbar, IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
@@ -13,21 +13,29 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 
+import Pagination from '../../components/Pagination'
 import './Folder.css';
 
 const Folder: React.FC = () => {
+  const [APIData, setAPIData] = useState<any[]>([]);
   const [searchFolder, setSearchFolder] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [message] = useIonAlert();
 
-  const [APIData, setAPIData] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(5);
+
+  let { id } = useParams() as any;
+  console.log('id :' + id);
+
   useEffect(() => {
-    axios.get(`http://localhost:3000/case`)
-      .then((response) => {
-        console.log(response.data)
-        setAPIData(response.data);
-      })
-  }, []);
+    const fetchData = async () => {
+        axios.get('http://localhost:3000/case/all/client').then((response) => {
+            setAPIData(response.data);
+        }).then(() => getData())
+    };
+    fetchData();
+  },[])
 
   const setData = (data: { id: any; code: string; description: string; startDate: string; status: string; endDate: string; }) => {
     let { id, code, description, startDate, status, endDate} = data;
@@ -40,32 +48,23 @@ const Folder: React.FC = () => {
   }
 
   const getData = () => {
-    axios.get(`http://localhost:3000/case`)
-      .then((getData) => {
+    axios.get('http://localhost:3000/case')
+    .then((getData) => {
         setAPIData(getData.data);
-      })
-  }
-
-  const getStatusTrue = () => {
-    axios.get(`http://localhost:3000/case/status/true`)
-      .then((getStatusTrue) => {
-        setAPIData(getStatusTrue.data);
-      })
-  }
-
-  const getStatusFalse = () => {
-    axios.get(`http://localhost:3000/case/status/false`)
-      .then((getStatusFalse) => {
-        setAPIData(getStatusFalse.data);
-      })
-  }
-
-  const onDelete = (id: any) => {
-    axios.delete(`http://localhost:3000/case/${id}`)
-    .then(() => {
-      getData();
     })
   }
+  
+  const onDelete = (id:any) => {
+    axios.delete(`http://localhost:3000/case/${id}`)
+    .then(() => {
+        getData();
+    })
+  }
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = APIData.slice(indexOfFirstPost, indexOfLastPost)
+  const paginate = (pageNumbers:any) => setCurrentPage(pageNumbers)
 
   const {register, handleSubmit, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -155,9 +154,9 @@ const Folder: React.FC = () => {
         <h5 id="titlePageFolder"> Ici sont répertoriés nos différents Dossiers </h5>
 
         <select id="sortByFolder">  
-          <option onSelect={() => getData()}> Afficher affaires en cours et clôturées </option>  
-          <option onSelect={() => getStatusFalse()}> Afficher affaires en cours </option>  
-          <option onSelect={() => getStatusTrue()}> Afficher affaires clôturées </option>   
+          <option> Afficher affaires en cours et clôturées </option>  
+          <option> Afficher affaires en cours </option>  
+          <option> Afficher affaires clôturées </option>   
         </select> 
 
         <IonSearchbar id="searchBar" value={searchFolder} onIonChange={e => setSearchFolder(e.detail.value!)} placeholder="Rechercher un Dossier ..."/>
@@ -172,7 +171,7 @@ const Folder: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {APIData.map((data) => {
+            {currentPosts.map((data) => {
               return (
                 <tr>
                   <td id="code">{data.code}</td>
@@ -202,7 +201,10 @@ const Folder: React.FC = () => {
               );
             })}
           </tbody>
-        </table>       
+        </table>    
+
+        <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Ajouter un dossier</IonButton>   
+        <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
 
         <IonModal isOpen={showEditModal}>
           <IonContent>
@@ -232,15 +234,6 @@ const Folder: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        <IonButton id="btnNewFolder" onClick={() => setShowEditModal(true)}>Ajouter un dossier</IonButton>
-
-        <div className="pagination">
-          <a href="#">Précédent</a>
-          <a href="#" className="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
-          <a href="#">Suivant</a>
-        </div>
       </IonContent>
     </IonPage>
   );
