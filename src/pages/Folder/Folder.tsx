@@ -18,15 +18,17 @@ import folderData from "./Folder.type";
 
 import { Link } from 'react-router-dom';
 import ModalEditFolder from "../../components/ModaleEditFolder";
-
+ import getData from "./../Client/Client"
 
 interface SearchbarChangeEventDetail {
   value?: string;
 }
-
+const go = getData;
+ console.log(go);
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
   const [data, setData]=useState<any[]>([]);
+  const [datac, setDatac]=useState<any[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<folderData>();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +41,24 @@ const Folder: React.FC = () => {
     .then(data=>{
       setData(data);
     })
+  }
+  const getDataClient=()=>{
+
+    fetch('clients.json'
+        ,{
+          headers : {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+          }
+        }).then(function(response){
+      console.log(response)
+      return response.json();
+    }).then(function(datac) {
+      console.log(datac);
+      setDatac(datac)
+    }).catch(function (error) {
+      console.log(error);
+    });
   }
 
   const getData=()=>{
@@ -61,7 +81,8 @@ const Folder: React.FC = () => {
   }
   useEffect(()=>{
     getData()
-  },[isOpen, isEdit, setData])
+    getDataClient()
+  },[isOpen, isEdit, setData, setDatac])
 
 
   function refreshList() {
@@ -71,7 +92,7 @@ const Folder: React.FC = () => {
   const path = require('path');
   const fs = window.require('fs');
 
-  const {register, handleSubmit, formState: {errors}} = useForm({
+  const {register, handleSubmit, reset, formState: {errors}} = useForm({
     mode: "onTouched",
     reValidateMode: "onChange"
   });
@@ -151,7 +172,7 @@ const Folder: React.FC = () => {
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
 
-  const onSubmit = (data: any, e:any) => {
+  const onSubmit = (data: any) => {
     let file = path.join(pathName, data.filename)
     const id = dataLength
     data = {
@@ -180,9 +201,8 @@ const Folder: React.FC = () => {
         else list = [data]
         fs.writeFileSync(file, JSON.stringify(list, null, 2));
         console.log("Un nouveau dossier a été ajouté !")
-      e.target.reset()
     }
-    e.target.reset()
+    reset()
     getData()
   }
 
@@ -250,14 +270,14 @@ const Folder: React.FC = () => {
                <tr key={index}>
                 <td id="code">{folder.code}</td>
                   <td id="statut">{folder.status}</td>
-                  <td id="clients">{folder.client}</td>
+                  <td id="clients">{[...folder.client]+ ","}</td>
                   <td id="actions">
                     <Link to={`/dossiers/${folder.id}`}>
                       <IonButton id="eyeButton" color="primary" size="small">
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
                     </Link>
-                    <IonButton color='primary' onClick={() => {
+                    <IonButton color='warning' onClick={() => {
                       modFolder(folder)
                     }}>
                       <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
@@ -315,7 +335,7 @@ const Folder: React.FC = () => {
                 <IonLabel position="fixed">Nom du client</IonLabel>
                 <select {...register("client")} onChange={refreshList} multiple={true}>
                   <option>--sélectionnez--</option>
-                  {data && data.length>0 && data.map((user: any) => {
+                  {datac && datac.length>0 && datac.map((user: any) => {
                     return (
                         <option key={user.id} value={user.lastname + " " + user.firstname}>{user.lastname + " " + user.firstname}</option>
                     );

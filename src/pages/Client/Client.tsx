@@ -65,7 +65,7 @@ const Client: React.FC = () => {
   const path = require('path');
   const fs = window.require('fs');
 
-  const {register, handleSubmit, formState: {errors}} = useForm({
+  const {register, handleSubmit, reset, formState: {errors}} = useForm({
     mode: "onTouched",
     reValidateMode: "onChange"
   });
@@ -165,7 +165,7 @@ const Client: React.FC = () => {
 
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
-  const onSubmit = (data: any, e:any) => {
+  const onSubmit = (data: any) => {
     let file = path.join(pathName, data.filename)
     const id = clientsLength;
     data = {
@@ -194,9 +194,8 @@ const Client: React.FC = () => {
         else list = [data]
         fs.writeFileSync(file, JSON.stringify(list, null, 2));
         console.log("Un nouveau client a été ajouté ! ")
-        e.target.reset()
     }
-    e.target.reset()
+    reset();
     getData()
   }
 
@@ -273,7 +272,7 @@ const Client: React.FC = () => {
                         <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
                       </IonButton>
                     </Link>
-                    <IonButton color='primary' onClick={() => {
+                    <IonButton color='warning' onClick={() => {
                       modClient(client)
                     }}>
                       <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
