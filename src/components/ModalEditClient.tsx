@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import axios from 'axios';
 import {
     IonButton,
     IonButtons,
@@ -12,8 +13,8 @@ import {
     IonTitle,
     IonToolbar
 } from "@ionic/react";
-
 import {closeOutline, closeSharp} from "ionicons/icons";
+
 import clientData from "./../pages/Client/Client.type";
 
 interface ModalProps {
@@ -23,8 +24,35 @@ interface ModalProps {
 }
 
 const ModalEditClient = (props: ModalProps) => {
-    const {isOpen, client, setIsOpen} = props;
+    const [APIData, setAPIData] = useState<any[]>([]);
 
+    const fetchData = async () => {
+        axios.get('http://localhost:3000/client/all/case').then((response) => {
+            setAPIData(response.data);
+        }).then(() => getData())
+    };
+
+    useEffect(() => {
+        fetchData();
+    },[])
+
+    const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
+        let { id, firstName, lastName, address, birthDate} = data;
+        localStorage.setItem('ID', id);
+        localStorage.setItem('First Name', firstName);
+        localStorage.setItem('Last Name', lastName);
+        localStorage.setItem('Address', address);
+        localStorage.setItem('birthDate', birthDate);
+    }
+
+    const getData = () => {
+      axios.get('http://localhost:3000/client')
+      .then((getData) => {
+          setAPIData(getData.data);
+      })
+    }
+
+    const {isOpen, client, setIsOpen} = props;
     const [states, setStates] = useState<clientData>({
         id: client.id,
         codeClient: client.codeClient,
@@ -39,15 +67,31 @@ const ModalEditClient = (props: ModalProps) => {
         setStates({...states, [inputName]: e.detail.value});
     }
 
-    const updateClient = () => {
+    function updateClient(clients:any) {
         const client: clientData = {
-            id: states.id,
-            codeClient: states.codeClient,
-            lastName: states.lastName,
-            firstName: states.firstName,
-            address: states.address,
-            birthDate: states.birthDate,
-            inscription: states.inscription
+            "id": states.id,
+            "codeClient":states.codeClient,
+            "lastName":states.lastName,
+            "firstName":states.firstName,
+            "address":states.address,
+            "birthDate":states.birthDate,
+            "inscription":states.inscription
+        }
+
+        if (APIData) {
+            var foundId = APIData.findIndex(function(obj: { id: any; }){
+                return obj.id == client.id
+            });
+
+            if(foundId !== -1){
+                APIData[foundId] = client
+            }
+
+            console.log(client.id)
+            console.log(APIData[client.id])
+            axios.put(`http://localhost:3000/client/${client.id}`, client)
+            console.log("Le client a été mis à jour! ")
+            setIsOpen(false);
         }
     }
 
@@ -73,9 +117,9 @@ const ModalEditClient = (props: ModalProps) => {
                 <IonItem>
                     <IonLabel position="floating">Nom</IonLabel>
                     <IonInput type='text'
-                              id='name'
+                              id='lastName'
                               required
-                              name='nom'
+                              name='lastName'
                               value={states.lastName}
                               onIonChange={e => handleChange(e, "lastName")}/>
                 </IonItem>
@@ -108,12 +152,11 @@ const ModalEditClient = (props: ModalProps) => {
 
                 <IonButton expand='block'
                            type='submit'
-                           onClick={updateClient}>
+                           onClick={() =>updateClient(client)}>
                     Mettre à jour
                 </IonButton>
             </IonContent>
         </IonModal>
     )
 }
-
 export default ModalEditClient;

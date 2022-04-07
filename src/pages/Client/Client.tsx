@@ -32,14 +32,15 @@ const Client: React.FC = () => {
   let { id } = useParams() as any;
   console.log('id :' + id);
 
-  useEffect(() => {
-    const fetchData = async () => {
-        axios.get('http://localhost:3000/client/all/case').then((response) => {
-            setAPIData(response.data);
-        }).then(() => getData())
-    };
-    fetchData();
-  },[id])
+  const fetchData = async () => {
+    axios.get('http://localhost:3000/client/all/case').then((response) => {
+        setAPIData(response.data);
+    }).then(() => getData())
+  };
+
+  useEffect(()=>{
+    fetchData()
+  },[isOpen, isEdit, setAPIData])
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
     let { id, firstName, lastName, address, birthDate} = data;
@@ -56,13 +57,13 @@ const Client: React.FC = () => {
         setAPIData(getData.data);
     })
   }
-  
-  const onDelete = (id:any) => {
+
+  const onDelete = (id: any) => {
     axios.delete(`http://localhost:3000/client/${id}`)
     .then(() => {
-        getData();
-        window.location.reload();
+        APIData.slice(id, 1);
     })
+    getData();
   }
   
   const indexOfLastPost = currentPage * postsPerPage;
@@ -70,10 +71,12 @@ const Client: React.FC = () => {
   const currentPosts = APIData.slice(indexOfFirstPost, indexOfLastPost)
   const paginate = (pageNumbers:any) => setCurrentPage(pageNumbers)
 
-  const {register, handleSubmit, formState: {errors}} = useForm({
+  const {register, handleSubmit, reset, formState: {errors}} = useForm({
     mode: "onTouched",
     reValidateMode: "onChange"
   });
+
+  const date = Date.now();
 
   const fields = [
     {
@@ -127,16 +130,32 @@ const Client: React.FC = () => {
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"
       }
+    },
+    {
+      label: "Inscription",
+      required: true,
+      requiredOptions: {
+        minDate: '01/01/2000'
+      },
+      props: {
+        name: "createdAt",
+        type: "date",
+        inputmode: "datePicker",
+        placeholder: "jj/mm/AAAA"
+      }
     }
   ];
 
   const onSubmit = (data: any, e:any) => {
-    e.preventDefault();
-    console.log(data);
-    setData(data);
-    setIsOpen(false);
-    setIsEdit(false);
-    getData();
+    axios.post('http://localhost:3000/client', data)
+    .then(() => {
+        getData();
+        window.location.reload();
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+    e.target.reset();
   }
 
   function modClient(client: any) {
@@ -214,17 +233,6 @@ const Client: React.FC = () => {
           </tbody>
         </table> 
 
-        <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
-        {selectedClient ? (
-            <ModalEditClient
-                client={selectedClient}
-                isOpen={isEdit}
-                setIsOpen={() => setIsEdit(false)}
-            />
-        ) : null}
-
-        <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
-
         <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
           <IonContent>
             <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
@@ -253,6 +261,17 @@ const Client: React.FC = () => {
             </form>
           </IonContent>
         </IonModal>
+
+        <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
+        {selectedClient ? (
+            <ModalEditClient
+                client={selectedClient}
+                isOpen={isEdit}
+                setIsOpen={() => setIsEdit(false)}
+            />
+        ) : null}
+
+        <Pagination totalPost={APIData.length} postsPerPage={postsPerPage} paginate={paginate}></Pagination>
 
       </IonContent>
     </IonPage>

@@ -48,10 +48,14 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "backend": "npm --prefix ./Back-End run start",
+    "backend:build": "cd electron && npm install",
+    "backend:start": "npm --prefix ./Back-End run start",
     "electron:start": "cd electron && cross-env REACT_APP_BUILD_TYPE=electron npm run electron:start",
-    "mobile:start": "cross-env REACT_APP_BUILD_TYPE=mobile npm start",
-    "web:start": "cross-env REACT_APP_BUILD_TYPE=web npm start"
+    "electron:build": "cd electron && ionic build && ionic cap copy",
+    "mobile:start": "cross-env REACT_APP_BUILD_TYPE=mobile ionic serve",
+    "mobile:build": "npm install && ionic build",
+    "web:start": "cross-env REACT_APP_BUILD_TYPE=web npm start",
+    "web:build": "npm install"
   },
   "eslintConfig": {
     "extends": [

@@ -22,12 +22,13 @@ const FolderDetail: React.FC = () => {
 
   let { id } = useParams() as any;
 
+  const fetchData = async () => {
+    axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
+      setAPIData(response.data);
+    })
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-        axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
-          setAPIData(response.data);
-        })
-    };
     fetchData();
   }, [id])
 
@@ -191,13 +192,12 @@ console.log(data)
 
           <h3 className="modalSubtitle">Evenements</h3>
           <div>
-            {data[0]?.event.map((event :any )=>{
-                return (
-                <p>{event.date} - {event.description} - {event.time}</p>
-                )
-                })}
+            {data[0]?.event.map((event :any )=> {
+              return (
+                <p>{event.date} ({event.time + " min"}) - {event.description}</p>
+              )
+            })}
           </div>
-
 
           <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
         </div>
