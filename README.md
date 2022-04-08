@@ -36,3 +36,5 @@ Web : ```npm run web:build``` and ```npm run web:start```
 Mobile : ```npm run ionic:build``` and ```npm run ionic:start```
 
 Back-End : ```npm run backend:build``` and ```npm run backend:start```
+
+Electron with same build : ```ionic build``` and ```ionic cap sync``` and ```ionic serve``` and ```electron .```
