@@ -23,8 +23,7 @@ import ModalEditFolder from "../../components/ModaleEditFolder";
 interface SearchbarChangeEventDetail {
   value?: string;
 }
-const go = getData;
- console.log(go);
+
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
   const [data, setData]=useState<any[]>([]);
@@ -327,8 +326,8 @@ const Folder: React.FC = () => {
               <IonItem>
                 <IonLabel position="fixed">Statut</IonLabel>
                 <select {...register("status")}>
-                  <option value="pending">en cours</option>
-                  <option value="done">terminé</option>
+                  <option value="en cours">en cours</option>
+                  <option value="terminé">terminé</option>
                 </select>
               </IonItem>
               <IonItem>

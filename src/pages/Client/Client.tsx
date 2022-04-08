@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonButton, IonModal, IonItem, IonLabel} from '@ionic/react';
+  IonButton, IonItem} from '@ionic/react';
 import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
   trashOutline, trashSharp,
-  closeOutline, closeSharp,
-  alertCircleOutline, pencilSharp, pencilOutline
+ pencilSharp, pencilOutline, addOutline
 } from 'ionicons/icons';
 
 import './Client.css';
@@ -16,10 +14,7 @@ import {
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import ModalEditClient from "../../components/ModalEditClient";
-
-interface SearchbarChangeEventDetail {
-  value?: string;
-}
+import ModalCreateClient from "../../components/ModalCreateClient";
 
 
 const Client: React.FC = () => {
@@ -33,13 +28,7 @@ const Client: React.FC = () => {
   const [message] = useIonAlert();
   const clientsLength = data.length;
 
-  const getData2=()=>{
-    fetch('http://localhost:5000/api/client')
-    .then(res=>res.json())
-    .then(data=>{
-      setData(data);
-    })
-  }
+
   const getData=()=>{
 
     fetch('clients.json'
@@ -65,140 +54,7 @@ const Client: React.FC = () => {
   const path = require('path');
   const fs = window.require('fs');
 
-  const {register, handleSubmit, reset, formState: {errors}} = useForm({
-    mode: "onTouched",
-    reValidateMode: "onChange"
-  });
-  const date = new Date().toLocaleDateString();
-  const fields = [
-    {
-      label: "Filename",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "filename",
-        type: "text",
-        value: "clients.json",
-        placeholder: "fichier de sauvegarde"
-      }
-    },
-    {
-      label: "Code client",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 10
-      },
-      props: {
-        name: "codeClient",
-        type: "text",
-        placeholder: "Entrez un code client"
-      }
-    },
-    {
-      label: "Firstname",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "firstname",
-        type: "text",
-        placeholder: "Entrez un prénom"
-      }
-    },
-    {
-      label: "Lastname",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 20
-      },
-      props: {
-        name: "lastname",
-        type: "text",
-        placeholder: "Entrez un nom"
-      }
-    },
-    {
-      label: "Birthdate",
-      required: true,
-      requiredOptions: {
-        minDate: '01/01/2000'
-      },
-      props: {
-        name: "birthdate",
-        type: "date",
-      }
-    },
-    {
-      label: "Address",
-      required: true,
-      requiredOptions: {
-        minLength: 10,
-        maxLength: 50
-      },
-      props: {
-        name: "address",
-        type: "text",
-        placeholder: "Entrez une adresse"
-      }
-    },
-    {
-      label: "Inscription",
-      required: true,
-      requiredOptions: {
-
-        minDate: '01/01/2000'
-      },
-      props: {
-        name: "inscription",
-        type: "Datetime",
-        value: date,
-      }
-    }
-  ];
-
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
-
-  const onSubmit = (data: any) => {
-    let file = path.join(pathName, data.filename)
-    const id = clientsLength;
-    data = {
-      "id": id,
-      "codeClient":data.codeClient,
-      "lastname": data.lastname,
-      "firstname": data.firstname,
-      "birthdate": data.birthdate,
-      "address": data.address,
-      "inscription": data.inscription
-    }
-
-    console.log(data);
-
-    if (!fs.existsSync(file)) {
-        fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
-            if (error) {
-                console.log(error)
-            }
-            console.log("Le fichier a été créé avec succès !")
-        });
-    } else {
-        var clients = fs.readFileSync(file, 'utf8');
-        var list = (clients.length) ? JSON.parse(clients) : [];
-        if (list instanceof Array) list.push(data)
-        else list = [data]
-        fs.writeFileSync(file, JSON.stringify(list, null, 2));
-        console.log("Un nouveau client a été ajouté ! ")
-    }
-    reset();
-    getData()
-  }
-
 
   const deleteClient = (data:any,index:number) => {
     let file = path.join(pathName, 'clients.json');
@@ -222,10 +78,6 @@ const Client: React.FC = () => {
 
     setSelectedClient(client)
     setIsEdit(true)
-  }
-  function addClient() {
-    setIsEdit(false)
-    setIsOpen(true)
   }
 
   const searchText = (e:any) => {
@@ -261,9 +113,9 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSearch && dataSearch.length>0 && dataSearch.map((client: clientData, index:number) => {
+            {dataSearch.map((client: clientData) => {
               return (
-                <tr key={index}>
+                <tr key={client.id}>
                   <td id="name">{client.lastname + " " + client.firstname}</td>
                   <td id="affairs">Affaires associées</td>
                   <td id="actions">
@@ -292,38 +144,22 @@ const Client: React.FC = () => {
                     </IonButton>
                   </td>
                 </tr>
-              )})};
+              )})}
           </tbody>
         </table>
-        <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
-          <IonContent>
-            <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
+        <ModalCreateClient
+            isOpen={isOpen}
+            setIsOpen={() => setIsOpen(false)}
+        />
+        <IonItem lines='none'>
+          <IonButtons slot='end'>
+            <IonButton color='primary' onClick={() => {
+              setIsOpen(true)
+            }}>
+              <IonIcon icon={addOutline}/>Ajouter un client
             </IonButton>
-            <h3 className="titleModal">Nouveau Client</h3>
-
-            <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
-              {fields.map((field, index) => {
-
-                const {label, required, requiredOptions, props} = field;
-                return (
-                    <IonItem key={`form_field_${index}`} lines="full">
-                      <>
-                        <IonLabel position="fixed">{label}</IonLabel>
-                        <input
-                            className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                      </>
-
-                      {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                    </IonItem>
-                );
-              })}
-
-              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
-            </form>
-          </IonContent>
-        </IonModal>
-        <IonButton id="btnNewClient" onClick={() => addClient()}>Ajouter un client</IonButton>
+          </IonButtons>
+        </IonItem>
         {selectedClient ? (
             <ModalEditClient
                 client={selectedClient}

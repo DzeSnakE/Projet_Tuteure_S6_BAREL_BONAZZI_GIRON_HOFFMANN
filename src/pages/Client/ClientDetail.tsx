@@ -40,8 +40,8 @@ const ClientDetail: React.FC = () => {
             console.log(data);
             const test = data.filter(function(item:any){
                 return item.id == id;
-            }).map(function({id, codeClient, lastname, firstname, birthdate, address, inscription }:clientData){
-                return {id, codeClient, lastname, firstname, birthdate, address, inscription };
+            }).map(function({id, lastname, firstname, birthdate, address, inscription }:clientData){
+                return {id, lastname, firstname, birthdate, address, inscription };
             });
             console.log(test);
             setData(test)
@@ -60,7 +60,6 @@ const ClientDetail: React.FC = () => {
     }
 
     function modClient(client: any) {
-
         setSelectedClient(client)
         setIsEdit(true)
     }
@@ -115,7 +114,7 @@ const ClientDetail: React.FC = () => {
                             />
                         ) : null}
                     </IonContent>
-                    )})};
+                    )})}
         </IonPage>
     );
 };

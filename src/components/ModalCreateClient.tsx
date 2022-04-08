@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {
     IonButton,
     IonButtons,
-    IonContent,
+    IonContent, IonDatetime,
     IonHeader,
     IonIcon,
     IonInput,
@@ -10,71 +10,104 @@ import {
     IonLabel,
     IonModal,
     IonTitle,
-    IonToolbar
+    IonToolbar,
 } from "@ionic/react";
 import {closeOutline, closeSharp} from "ionicons/icons";
-
+import {format, parseISO} from 'date-fns';
 import clientData from "./../pages/Client/Client.type";
 
 interface ModalProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    client: clientData
 }
 
 const path = require('path');
 const fs = window.require('fs');
 
-const ModalEditClient = (props: ModalProps) => {
-    const {isOpen, client, setIsOpen} = props;
-
+const ModalCreateClient = (props: ModalProps) => {
+    const {isOpen, setIsOpen} = props;
+    const [date, setDate] = useState("");
+    const [data, setData]=useState<any[]>([]);
     const [states, setStates] = useState<clientData>({
-        id: client.id,
-        lastname: client.lastname,
-        firstname: client.firstname,
-        address: client.address,
-        birthdate: client.birthdate,
-        inscription: client.inscription
+        id:"",
+        lastname: "",
+        firstname: "",
+        address: "",
+        birthdate: "",
+        inscription: "",
     });
+
 
     const handleChange = (e:any, inputName: string) => {
         setStates({...states, [inputName]: e.detail.value});
     }
 
+    const formatDate = (value: string) => {
+        return format(parseISO(value), 'yyyy-MM-dd');
+    };
+
+    const getData=()=>{
+
+        fetch('clients.json'
+            ,{
+                headers : {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': 'application/json'
+                }
+            }).then(function(response){
+            console.log(response)
+            return response.json();
+        }).then(function(data) {
+            console.log(data);
+            setData(data)
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+    useEffect(()=>{
+        getData()
+    },[setData])
+
+    const clientsLength = data.length;
     let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
 
-    function updateClient(clients:any) {
+    function createClient(clients:any) {
+        const id = clientsLength
         const client: clientData = {
-            "id": states.id,
+            "id": id,
             "lastname":states.lastname,
             "firstname":states.firstname,
+            "birthdate":date,
             "address":states.address,
-            "birthdate":states.birthdate,
-            "inscription":states.inscription
+            "inscription":date
         }
         let file = path.join(pathName, 'clients.json');
-        if (fs.existsSync(file)) {
+        if (!fs.existsSync(file)) {
+            fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
+                if (error) {
+                    console.log(error)
+                }
+                console.log("Le fichier a été créé avec succès !")
+            });
+        } else {
             clients = fs.readFileSync(file, 'utf8');
             var list = (clients.length) ? JSON.parse(clients) : [];
-            var foundId = list.findIndex(function(obj: { id: any; }){
-                return obj.id == client.id
-            });
-            if(foundId !== -1){
-                list[foundId] = client
-            }
-            console.log(client.id)
-            console.log(list[client.id])
+            if (list instanceof Array) list.push(client)
+            else list = [client]
             fs.writeFileSync(file, JSON.stringify(list, null, 2));
-            console.log("Le client a été mis à jour! ")
-            setIsOpen(false);
+            console.log("Un nouveau client a été ajouté ! ")
         }
+        setIsOpen(false);
+        getData()
+        setStates({
+            id:"",
+            lastname: "",
+            firstname: "",
+            address: "",
+            birthdate: "",
+            inscription: "",
+        })
     }
-
-
-    useEffect(() => {
-        setStates(client);
-
-    }, [client.birthdate,client]);
 
     return (
         <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
@@ -86,7 +119,7 @@ const ModalEditClient = (props: ModalProps) => {
                                      md={closeSharp}/>
                         </IonButton>
                     </IonButtons>
-                    <IonTitle>Editer un Client</IonTitle>
+                    <IonTitle>Créer un Client</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
@@ -108,6 +141,17 @@ const ModalEditClient = (props: ModalProps) => {
                               name='firstname'
                               onIonChange={e => handleChange(e, "firstname")}/>
                 </IonItem>
+                <IonItem lines='none'>
+                    <IonLabel>Date de naissance</IonLabel>
+                </IonItem>
+                <IonItem>
+                    <IonDatetime
+                        id='date'
+                        name='date'
+                        aria-current="date"
+                        onIonChange={ev => setDate(formatDate(ev.detail.value!))}
+                    />
+                </IonItem>
                 <IonItem>
                     <IonLabel position="floating">Adresse</IonLabel>
                     <IonInput type='text'
@@ -117,22 +161,23 @@ const ModalEditClient = (props: ModalProps) => {
                               value={states.address}
                               onIonChange={e => handleChange(e, "address")}/>
                 </IonItem>
+                <IonItem lines='none'>
+                    <IonLabel>Date d'inscription'</IonLabel>
+                </IonItem>
                 <IonItem>
-                    <IonLabel position="floating">Date de naissance</IonLabel>
-                    <IonInput type='text'
-                              id='bd'
-                              readonly={true}
-                              name='bd'
-                              value={states.birthdate}/>
+                    <IonDatetime
+                        id='date'
+                        name='date'
+                        aria-current="date"
+                        onIonChange={ev => setDate(formatDate(ev.detail.value!))}
+                    />
                 </IonItem>
 
-                <IonButton expand='block'
-                           type='submit'
-                           onClick={() =>updateClient(client)}>
-                    Mettre à jour
+                <IonButton expand='block' type='submit' onClick={createClient}>
+                    Ajouter un client
                 </IonButton>
             </IonContent>
         </IonModal>
     )
 }
-export default ModalEditClient;
+export default ModalCreateClient;

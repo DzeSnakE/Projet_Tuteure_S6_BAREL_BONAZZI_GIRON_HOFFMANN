@@ -15,7 +15,7 @@ const Home: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <h2> Bienvenue sur notre app ! </h2>
+        <h2> Bienvenue sur notre application </h2>
         <h6> de Gestion de Cabinet d'Avocat </h6>
         <img src="../../public/assets/img/balance_move.gif" alt="Balance gif"/>
 
