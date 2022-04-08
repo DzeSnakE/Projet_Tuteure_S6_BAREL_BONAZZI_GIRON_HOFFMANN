@@ -6,10 +6,10 @@
 
 ### 🚀 Group Members + Work division in percentage
 
-- BAREL Antoine (7%)
-- BONAZZI Pierre-Jean (31%)
-- GIRON Maxence (31%)
-- HOFFMANN Eric (31%)
+- BAREL Antoine (4%)
+- BONAZZI Pierre-Jean (32%)
+- GIRON Maxence (32%)
+- HOFFMANN Eric (32%)
 
 #
 
