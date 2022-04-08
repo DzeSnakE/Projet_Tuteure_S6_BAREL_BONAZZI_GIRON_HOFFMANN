@@ -159,4 +159,5 @@ const ModalEditClient = (props: ModalProps) => {
         </IonModal>
     )
 }
+
 export default ModalEditClient;

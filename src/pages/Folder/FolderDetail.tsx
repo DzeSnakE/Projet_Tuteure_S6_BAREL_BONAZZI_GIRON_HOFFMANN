@@ -1,9 +1,9 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
 import {
   folderOutline, folderSharp,
@@ -11,16 +11,21 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 
+import folderData from './Folder.type';
+import ModalEditFolder from "../../components/ModalEditFolder";
 import './FolderDetail.css';
 
 const FolderDetail: React.FC = () => {
   const history = useHistory();
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<folderData>();
   const [showEventModal, setShowEventModal] = useState(false);
-  const [data, setAPIData] = useState([] as any);
+  const [message] = useIonAlert();
+  const [isEdit, setIsEdit] = useState(false);
 
 
   let { id } = useParams() as any;
+
+  const [data, setAPIData] = useState([] as any);
 
   const fetchData = async () => {
     axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
@@ -30,12 +35,33 @@ const FolderDetail: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id])
+  }, [id, isEdit])
 
   const onDelete = () => {
     axios.delete(`http://localhost:3000/case/${id}`)
-    history.push('/clients')
+    history.push('/dossiers')
   }
+
+  function modFolder(folder: any) {
+    setSelectedFolder(folder)
+    setIsEdit(true)
+  }
+
+  const addEvent = (event : React.FormEvent) =>{
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const data = new FormData(form);
+    const description = data.get('description');
+    const date = data.get('date');
+    const time = data.get('time');
+     axios.post(`http://localhost:3000/event`, {
+       date: date,
+       time: time,
+       description: description,
+       cases: id,
+     })
+     window.location.reload();
+   }
 
   const {register, handleSubmit, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -70,26 +96,13 @@ const FolderDetail: React.FC = () => {
       }
     },
     {
-      label: "Statut",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 5
-      },
-      props: {
-        name: "statut",
-        type: "boolean",
-        placeholder: "(0 : En cours, 1 : Clôturé)"
-      }
-    },
-    {
       label: "Date début",
       required: true,
       requiredOptions: {
         minDate: '01/01/2000'
       },
       props: {
-        name: "beginDate",
+        name: "EndDate",
         type: "date",
         inputmode: "datePicker",
         placeholder: "jj/mm/AAAA"
@@ -109,50 +122,7 @@ const FolderDetail: React.FC = () => {
       }
     }
   ];
-
-  const fieldsEvent = [
-    {
-      label: "Date",
-      required: true,
-      requiredOptions: {
-        minDate: '01/01/2000'
-      },
-      props: {
-        name: "date",
-        type: "date",
-        inputmode: "datePicker",
-        placeholder: "jj/mm/AAAA"
-      }
-    },
-    {
-      label: "Durée",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 5
-      },
-      props: {
-        name: "duree",
-        type: "number",
-        placeholder: "24"
-      }
-    },
-    {
-      label: "Description",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 250
-      },
-      props: {
-        name: "description",
-        type: "text",
-        placeholder: "Description de l'evenement ..."
-      }
-    }
-  ];
-
-console.log(data)
+    
   return (
     <IonPage>
       <IonHeader>
@@ -168,8 +138,18 @@ console.log(data)
         <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data[0]?.code}</h3>
 
         <div className="app-button">
-          <IonButton id="btnDeleteFolder" onClick={onDelete} color="danger">Supprimer</IonButton>
-          <IonButton id="btnUpdateFolder" onClick={() => setShowEditModal(true)}>Modifier</IonButton>
+          <IonButton onClick={() => message({
+            header: "Supprimer un dossier",
+            message: "Voulez-vous vraiment supprimer ce dossier ?",
+            buttons: [
+              {text: 'Annuler', role: 'cancel'},
+              {text: 'Confirmer', handler: () => onDelete()} 
+            ]
+            })
+            } id="btnDeleteFolder" color="danger"> Supprimer
+          </IonButton> 
+
+          <IonButton onClick={() => modFolder(data[0])} id="btnUpdateFolder">Modifier</IonButton>
         </div>
 
         <div className="folders">
@@ -184,7 +164,9 @@ console.log(data)
           <div>
           {data[0]?.clients.map((clients :any )=>{
             return (
-                <p>{clients.firstName} {clients.lastName}</p>
+            <p>
+                <Link to={'/clients/' + clients.id}>{clients.firstName} {clients.lastName}</Link>
+                </p>
              )
           })}
           </div>
@@ -202,34 +184,6 @@ console.log(data)
           <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
         </div>
 
-        <IonModal isOpen={showEditModal}>
-          <IonContent>
-            <IonButton color="danger" id="closeModal" onClick={() => setShowEditModal(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp} />
-            </IonButton>
-            <h5 className="titleModal">{"Modification du dossier " + data.code}</h5>
-
-            <form className="formFolder">
-              {fields.map((field, index) => {
-                const {label, required, requiredOptions, props} = field;
-
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
-
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
-                );
-              })}
-
-              <IonButton type="submit" className="btnSubmit">Modifier</IonButton>
-            </form>
-          </IonContent>
-        </IonModal>
-
         <IonModal isOpen={showEventModal}>
           <IonContent>
             <IonButton color="danger" id="closeModal" onClick={() => setShowEventModal(false)}>
@@ -237,26 +191,32 @@ console.log(data)
             </IonButton>
             <h5 className="titleModal">Nouvel Evenement</h5>
 
-            <form className="formFolder">
-              {fieldsEvent.map((fieldEvent, index) => {
-                const {label, required, requiredOptions, props} = fieldEvent;
-
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
-
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
-                );
-              })}
-
+            <form className="formFolder" onSubmit={addEvent}>
+                   <IonItem>
+                     <IonLabel>Date</IonLabel>
+                     <input type="date" name="date" />
+                   </IonItem>
+                    <IonItem>
+                      <IonLabel>Description</IonLabel>
+                      <input type="text" name="description" />
+                    </IonItem>
+                    <IonItem>
+                      <IonLabel>Temps</IonLabel>
+                      <input type="number" name="time" />
+                    </IonItem>
               <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
         </IonModal>
+
+        {selectedFolder ? (
+            <ModalEditFolder
+                folder={selectedFolder}
+                isOpen={isEdit}
+                setIsOpen={() => setIsEdit(false)}
+            />
+          ) : null
+        }
 
       </IonContent>
     </IonPage>

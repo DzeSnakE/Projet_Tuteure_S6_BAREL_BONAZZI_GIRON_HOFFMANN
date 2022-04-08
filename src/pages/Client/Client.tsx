@@ -30,7 +30,6 @@ const Client: React.FC = () => {
   const [postsPerPage] = useState(5);
 
   let { id } = useParams() as any;
-  console.log('id :' + id);
 
   const fetchData = async () => {
     axios.get('http://localhost:3000/client/all/case').then((response) => {
@@ -52,7 +51,7 @@ const Client: React.FC = () => {
   }
 
   const getData = () => {
-    axios.get('http://localhost:3000/client')
+    axios.get('http://localhost:3000/client/all/case')
     .then((getData) => {
         setAPIData(getData.data);
     })
@@ -150,12 +149,12 @@ const Client: React.FC = () => {
     axios.post('http://localhost:3000/client', data)
     .then(() => {
         getData();
-        window.location.reload();
     })
     .catch((error) => {
         console.log(error);
     })
     e.target.reset();
+    window.location.reload();
   }
 
   function modClient(client: any) {
@@ -177,7 +176,7 @@ const Client: React.FC = () => {
       item["lastName"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
     )
   });
-  
+
   return (
     <IonPage>
       <IonHeader>
@@ -202,11 +201,19 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSearch && dataSearch.length>0 && dataSearch.map((data: clientData, index: number) => {
+            {dataSearch?.map((data: any, index: number) => {
               return (
                 <tr>
                   <td id="name">{data.lastName + " " + data.firstName}</td>
-                  <td id="affairs">/</td>
+                  <td id="affairs">
+                    {data.cases.map((caseData: any) => {
+                      return (
+                        <div>
+                          <p>{caseData.code}</p>
+                        </div>
+                      )
+                    })}
+                  </td>
                   <td id="actions">
                     <Link to={'/clients/' + data.id}>
                       <IonButton id="eyeButton" color="primary" size="small">

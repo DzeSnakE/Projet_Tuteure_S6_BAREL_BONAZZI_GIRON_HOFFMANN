@@ -33,7 +33,7 @@ createConnection().then(async connection => {
 
     app.listen(3000);
 
-    /*
+/*
     const client1 = new Client();
     client1.firstName = "Mickael";
     client1.lastName = "Dupont";
