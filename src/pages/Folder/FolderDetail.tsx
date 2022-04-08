@@ -192,18 +192,19 @@ const FolderDetail: React.FC = () => {
             <h5 className="titleModal">Nouvel Evenement</h5>
 
             <form className="formFolder" onSubmit={addEvent}>
-                   <IonItem>
-                     <IonLabel>Date</IonLabel>
-                     <input type="date" name="date" />
-                   </IonItem>
-                    <IonItem>
-                      <IonLabel>Description</IonLabel>
-                      <input type="text" name="description" />
-                    </IonItem>
-                    <IonItem>
-                      <IonLabel>Temps</IonLabel>
-                      <input type="number" name="time" />
-                    </IonItem>
+              <IonItem>
+                <IonLabel>Date</IonLabel>
+                <input className="inputEventFormDate" type="date" name="date" />
+              </IonItem>
+               <IonItem>
+                 <IonLabel>Description</IonLabel>
+                 <input className="inputEventForm" type="text" name="description" placeholder="L'accusé va se faire juger ..."/>
+               </IonItem>
+               <IonItem>
+                 <IonLabel>Durée (min)</IonLabel>
+                 <input className="inputEventForm" type="number" name="time" placeholder="30" />
+               </IonItem>
+
               <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
