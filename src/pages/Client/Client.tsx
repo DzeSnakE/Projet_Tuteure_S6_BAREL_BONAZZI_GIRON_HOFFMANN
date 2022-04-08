@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
+
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
   IonButton, IonItem} from '@ionic/react';
 import clientData from "./Client.type";
 import {
   eyeOutline, eyeSharp,
-  trashOutline, trashSharp,
- pencilSharp, pencilOutline, addOutline
+  trashOutline, trashSharp, pencilSharp, pencilOutline, addOutline
 } from 'ionicons/icons';
 
 import './Client.css';
@@ -26,7 +26,6 @@ const Client: React.FC = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [message] = useIonAlert();
-  const clientsLength = data.length;
 
 
   const getData=()=>{
@@ -54,7 +53,9 @@ const Client: React.FC = () => {
   const path = require('path');
   const fs = window.require('fs');
 
+
   let pathName:string = path.join(__dirname, './xampp/htdocs/Projet_Tuteure_S6_BAREL_BONAZZI_GIRON_HOFFMANN/electron/app')
+
 
   const deleteClient = (data:any,index:number) => {
     let file = path.join(pathName, 'clients.json');
@@ -79,6 +80,7 @@ const Client: React.FC = () => {
     setSelectedClient(client)
     setIsEdit(true)
   }
+
 
   const searchText = (e:any) => {
     setActiveFilter(e.target.value);
@@ -113,7 +115,7 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSearch.map((client: clientData) => {
+            {dataSearch && dataSearch.length>0 && dataSearch.map((client: clientData) => {
               return (
                 <tr key={client.id}>
                   <td id="name">{client.lastname + " " + client.firstname}</td>
@@ -156,7 +158,7 @@ const Client: React.FC = () => {
             <IonButton color='primary' onClick={() => {
               setIsOpen(true)
             }}>
-              <IonIcon icon={addOutline}/>Ajouter un client
+              <IonIcon icon={addOutline}/>Ajouter
             </IonButton>
           </IonButtons>
         </IonItem>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-//import axios from 'axios';
+
 import {useParams, useHistory, Link} from 'react-router-dom';
 
 import {
@@ -78,7 +78,7 @@ const ClientDetail: React.FC = () => {
                         )})}
                 </IonToolbar>
             </IonHeader>
-            {data && data.length>0 && data.map((data: clientData) => {
+            {data.map((data: clientData) => {
                 return(
 
                     <IonContent className="app-container">

@@ -15,7 +15,7 @@ import './FolderDetail.css';
 import folderData from "../Folder/Folder.type";
 import clientData from "../Client/Client.type";
 import {register} from "../../serviceWorkerRegistration";
-import ModalEditFolder from "../../components/ModaleEditFolder";
+import ModalEditFolder from "../../components/ModalEditFolder";
 
 const FolderDetail: React.FC = () => {
     const history = useHistory();

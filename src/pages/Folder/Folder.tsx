@@ -7,7 +7,6 @@ import {
 } from '@ionic/react';
 import {
   eyeOutline, eyeSharp,
-  createOutline, createSharp,
   trashOutline, trashSharp,
   closeOutline, closeSharp,
   alertCircleOutline, pencilOutline, pencilSharp
@@ -17,12 +16,7 @@ import './Folder.css';
 import folderData from "./Folder.type";
 
 import { Link } from 'react-router-dom';
-import ModalEditFolder from "../../components/ModaleEditFolder";
- import getData from "./../Client/Client"
-
-interface SearchbarChangeEventDetail {
-  value?: string;
-}
+import ModalEditFolder from "../../components/ModalEditFolder";
 
 const Folder: React.FC = () => {
   const [searchFolder, setSearchFolder] = useState('');
@@ -36,10 +30,10 @@ const Folder: React.FC = () => {
 
   const getData2=()=>{
     fetch('http://localhost:5000/api/folder')
-    .then(res=>res.json())
-    .then(data=>{
-      setData(data);
-    })
+        .then(res=>res.json())
+        .then(data=>{
+          setData(data);
+        })
   }
   const getDataClient=()=>{
 
@@ -187,19 +181,19 @@ const Folder: React.FC = () => {
     console.log(data);
 
     if (!fs.existsSync(file)) {
-        fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
-            if (error) {
-                console.log(error)
-            }
-            console.log("Le fichier a été créé avec succès !")
-        });
+      fs.writeFile(file, JSON.stringify([data], null, 2), (error: any) => {
+        if (error) {
+          console.log(error)
+        }
+        console.log("Le fichier a été créé avec succès !")
+      });
     } else {
-        var folders = fs.readFileSync(file, 'utf8');
-        var list = (folders.length) ? JSON.parse(folders) : [];
-        if (list instanceof Array) list.push(data)
-        else list = [data]
-        fs.writeFileSync(file, JSON.stringify(list, null, 2));
-        console.log("Un nouveau dossier a été ajouté !")
+      var folders = fs.readFileSync(file, 'utf8');
+      var list = (folders.length) ? JSON.parse(folders) : [];
+      if (list instanceof Array) list.push(data)
+      else list = [data]
+      fs.writeFileSync(file, JSON.stringify(list, null, 2));
+      console.log("Un nouveau dossier a été ajouté !")
     }
     reset()
     getData()
@@ -234,135 +228,135 @@ const Folder: React.FC = () => {
   }
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton />
-          </IonButtons>
-          <IonTitle>Dossiers</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Dossiers</IonTitle>
+          </IonToolbar>
+        </IonHeader>
 
-      <IonContent className="ion-padding">
+        <IonContent className="ion-padding">
 
-        <select id="sortByFolder">  
-          <option> Afficher affaires en cours et clôturées </option>  
-          <option> Afficher affaires en cours </option>  
-          <option> Afficher affaires clôturées </option>   
-        </select> 
+          <select id="sortByFolder">
+            <option> Afficher affaires en cours et clôturées </option>
+            <option> Afficher affaires en cours </option>
+            <option> Afficher affaires clôturées </option>
+          </select>
 
-        <IonSearchbar id="searchBar" value={searchFolder} onIonChange={e => setSearchFolder(e.detail.value!)} placeholder="Rechercher un Dossier ..."/>
-      
-        <table>
-          <thead>
+          <IonSearchbar id="searchBar" value={searchFolder} onIonChange={e => setSearchFolder(e.detail.value!)} placeholder="Rechercher un Dossier ..."/>
+
+          <table>
+            <thead>
             <tr>
               <th id="headCode">Code</th>
               <th id="headStatut">Statut</th>
               <th id="headClients">Clients</th>
               <th id="headActions">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-          {data && data.length>0 && data.map((folder: folderData, index: number) => {
-            return (
-               <tr key={index}>
-                <td id="code">{folder.code}</td>
-                  <td id="statut">{folder.status}</td>
-                  <td id="clients">{[...folder.client]+ ","}</td>
-                  <td id="actions">
-                    <Link to={`/dossiers/${folder.id}`}>
-                      <IonButton id="eyeButton" color="primary" size="small">
-                        <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+            </thead>
+            <tbody>
+            {data && data.length>0 && data.map((folder: folderData, index: number) => {
+              return (
+                  <tr key={index}>
+                    <td id="code">{folder.code}</td>
+                    <td id="statut">{folder.status}</td>
+                    <td id="clients">{[...folder.client]+ ","}</td>
+                    <td id="actions">
+                      <Link to={`/dossiers/${folder.id}`}>
+                        <IonButton id="eyeButton" color="primary" size="small">
+                          <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                        </IonButton>
+                      </Link>
+                      <IonButton color='warning' onClick={() => {
+                        modFolder(folder)
+                      }}>
+                        <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
+                      <IonButton  color="danger" size="small"
+                                  onClick={() =>  message({
+                                    cssClass: 'my-css',
+                                    header: "Supprimer un dossier",
+                                    message: "Voulez-vous vraiment supprimer ce dossier ?",
+                                    buttons: [
+                                      {text: 'Annuler', role: 'cancel'},
+                                      {text: 'Confirmer', handler: () => deleteFolder(data, folder.id)}
+                                    ],
+                                  })
+                                  }
+                      >
+                        <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp}/>
                       </IonButton>
-                    </Link>
-                    <IonButton color='warning' onClick={() => {
-                      modFolder(folder)
-                    }}>
-                      <IonIcon ios={pencilOutline} md={pencilSharp}/></IonButton>
-                    <IonButton  color="danger" size="small"
-                                onClick={() =>  message({
-                                  cssClass: 'my-css',
-                                  header: "Supprimer un dossier",
-                                  message: "Voulez-vous vraiment supprimer ce dossier ?",
-                                  buttons: [
-                                    {text: 'Annuler', role: 'cancel'},
-                                    {text: 'Confirmer', handler: () => deleteFolder(data, folder.id)}
-                                  ],
-                                })
-                                }
-                    >
-                      <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp}/>
-                    </IonButton>
-                  </td>
-                </tr>
-            );
-          })}
-          </tbody>
-        </table>
-        <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
-          <IonContent>
-            <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
-              <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
-            </IonButton>
-            <h3 className="titleModal">Nouveau Dossier</h3>
+                    </td>
+                  </tr>
+              );
+            })}
+            </tbody>
+          </table>
+          <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>
+            <IonContent>
+              <IonButton color="danger" id="closeModal" onClick={() => setIsOpen(false)}>
+                <IonIcon slot="icon-only" ios={closeOutline} md={closeSharp}/>
+              </IonButton>
+              <h3 className="titleModal">Nouveau Dossier</h3>
 
-            <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
-              {fields.map((field, index) => {
+              <form className="formModal" onSubmit={handleSubmit(onSubmit)}>
+                {fields.map((field, index) => {
 
-                const {label, required, requiredOptions, props} = field;
-                return (
-                    <IonItem key={`form_field_${index}`} lines="full">
-                      <>
-                        <IonLabel position="fixed">{label}</IonLabel>
-                        <input
-                            className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                      </>
+                  const {label, required, requiredOptions, props} = field;
+                  return (
+                      <IonItem key={`form_field_${index}`} lines="full">
+                        <>
+                          <IonLabel position="fixed">{label}</IonLabel>
+                          <input
+                              className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
+                        </>
 
-                      {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                    </IonItem>
-                );
-              })}
-              <IonItem>
-                <IonLabel position="fixed">Statut</IonLabel>
-                <select {...register("status")}>
-                  <option value="en cours">en cours</option>
-                  <option value="terminé">terminé</option>
-                </select>
-              </IonItem>
-              <IonItem>
-                <IonLabel position="fixed">Nom du client</IonLabel>
-                <select {...register("client")} onChange={refreshList} multiple={true}>
-                  <option>--sélectionnez--</option>
-                  {datac && datac.length>0 && datac.map((user: any) => {
-                    return (
-                        <option key={user.id} value={user.lastname + " " + user.firstname}>{user.lastname + " " + user.firstname}</option>
-                    );
-                  })})
-                </select>
-              </IonItem>
-              <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
-            </form>
-          </IonContent>
-        </IonModal>
-        <IonButton id="btnNewClient" onClick={() => addFolder()}>Ajouter un dossier</IonButton>
-        {selectedFolder ? (
-            <ModalEditFolder
-                folder={selectedFolder}
-                isOpen={isEdit}
-                setIsOpen={() => setIsEdit(false)}
-            />
-        ) : null}
+                        {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
+                      </IonItem>
+                  );
+                })}
+                <IonItem>
+                  <IonLabel position="fixed">Statut</IonLabel>
+                  <select {...register("status")}>
+                    <option value="en cours">en cours</option>
+                    <option value="terminé">terminé</option>
+                  </select>
+                </IonItem>
+                <IonItem>
+                  <IonLabel position="fixed">Nom du client</IonLabel>
+                  <select {...register("client")} onChange={refreshList} multiple={true}>
+                    <option>--sélectionnez--</option>
+                    {datac && datac.length>0 && datac.map((user: any) => {
+                      return (
+                          <option key={user.id} value={user.lastname + " " + user.firstname}>{user.lastname + " " + user.firstname}</option>
+                      );
+                    })})
+                  </select>
+                </IonItem>
+                <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
+              </form>
+            </IonContent>
+          </IonModal>
+          <IonButton id="btnNewClient" onClick={() => addFolder()}>Ajouter un dossier</IonButton>
+          {selectedFolder ? (
+              <ModalEditFolder
+                  folder={selectedFolder}
+                  isOpen={isEdit}
+                  setIsOpen={() => setIsEdit(false)}
+              />
+          ) : null}
 
-        <div className="pagination">
-          <a href="#">Précédent</a>
-          <a href="#" className="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
-          <a href="#">Suivant</a>
-        </div>
-      </IonContent>
-    </IonPage>
+          <div className="pagination">
+            <a href="#">Précédent</a>
+            <a href="#" className="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">Suivant</a>
+          </div>
+        </IonContent>
+      </IonPage>
   );
 };
 

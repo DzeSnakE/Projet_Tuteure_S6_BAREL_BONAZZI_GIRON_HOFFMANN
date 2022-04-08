@@ -24,7 +24,7 @@ interface ModalProps {
 const path = require('path');
 const fs = window.require('fs');
 
-const ModalCreateClient = (props: ModalProps) => {
+const ModalCreateFolder = (props: ModalProps) => {
     const {isOpen, setIsOpen} = props;
     const [date, setDate] = useState("");
     const [data, setData]=useState<any[]>([]);
@@ -162,14 +162,14 @@ const ModalCreateClient = (props: ModalProps) => {
                               onIonChange={e => handleChange(e, "address")}/>
                 </IonItem>
                 <IonItem lines='none'>
-                    <IonLabel>Date d'inscription'</IonLabel>
+                    <IonLabel>Date d'inscription</IonLabel>
                 </IonItem>
                 <IonItem>
                     <IonDatetime
                         id='date'
                         name='date'
                         aria-current="date"
-                        onIonChange={ev => setDate(formatDate(ev.detail.value!))}
+                        onIonChange={e => setDate(formatDate(e.detail.value!))}
                     />
                 </IonItem>
 
@@ -180,4 +180,4 @@ const ModalCreateClient = (props: ModalProps) => {
         </IonModal>
     )
 }
-export default ModalCreateClient;
+export default ModalCreateFolder;
