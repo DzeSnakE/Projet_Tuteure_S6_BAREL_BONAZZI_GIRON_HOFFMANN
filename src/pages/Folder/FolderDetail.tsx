@@ -21,20 +21,18 @@ const FolderDetail: React.FC = () => {
 
 
   let { id } = useParams() as any;
-  console.log('id :' + id);
+
+  const fetchData = async () => {
+    axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
+      setAPIData(response.data);
+    })
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-        axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
-          setAPIData(response.data);
-          console.log(response.data);
-        })
-    };
     fetchData();
-  }, [])
+  }, [id])
 
   const onDelete = () => {
-    console.log(id)
     axios.delete(`http://localhost:3000/case/${id}`)
     history.push('/clients')
   }
@@ -149,11 +147,12 @@ const FolderDetail: React.FC = () => {
       props: {
         name: "description",
         type: "text",
-        placeholder: "Description du dossier ..."
+        placeholder: "Description de l'evenement ..."
       }
     }
   ];
 
+console.log(data)
   return (
     <IonPage>
       <IonHeader>
@@ -161,12 +160,12 @@ const FolderDetail: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>{"Detail de " + data.code}</IonTitle>
+          <IonTitle>{"Detail de " + data[0]?.code}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="app-container">
-        <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data.code}</h3>
+        <h3 className="folderName"><Link to={'/dossiers'}><u>Dossiers</u></Link> &gt; {data[0]?.code}</h3>
 
         <div className="app-button">
           <IonButton id="btnDeleteFolder" onClick={onDelete} color="danger">Supprimer</IonButton>
@@ -174,41 +173,33 @@ const FolderDetail: React.FC = () => {
         </div>
 
         <div className="folders">
-          <h1 className="folderIconName"><IonIcon id="folderIcon" slot="icon-only" ios={folderOutline} md={folderSharp} /> {data.code}</h1>
-          <h4>&gt; {data.status ? 'Clôturé':'En cours'}</h4>
-          <h5>{"Affaire ouverte le " + data.startDate}</h5> <br/>
+          <h1 className="folderIconName"><IonIcon id="folderIcon" slot="icon-only" ios={folderOutline} md={folderSharp} /> {data[0]?.code}</h1>
+          <h4>&gt; {data[0]?.status ? 'Clôturé':'En cours'}</h4>
+          <h5>{"Affaire ouverte le " + data[0]?.startDate}</h5> <br/>
 
           <h3 className="modalSubtitle">Description</h3>
-          <h4>{data.description}</h4> <br/>
+          <h4>{data[0]?.description}</h4> <br/>
 
           <h3 className="modalSubtitle">Clients concernés</h3>
-          {data.map((data : any) => {
-          return(
           <div>
-          {data["clients"].map((clients :any )=>{
-             console.log(clients.firstName)
-             console.log(clients.lastName)
+          {data[0]?.clients.map((clients :any )=>{
             return (
-                <p>{clients.firstName} {clients.lastName}</p>
+            <p>
+                <Link to={'/clients/' + clients.id}>{clients.firstName} {clients.lastName}</Link>
+                </p>
              )
           })}
           </div>
-          )
-          })}
-           <br/>
+          <br/>
 
           <h3 className="modalSubtitle">Evenements</h3>
-          {data.map((data : any) => {
-          return(<div>
-          {data["event"].map((event :any )=>{
-          console.log(event.description)
-          return (
-          <p>{event.date} - {event.description} - {event.time}</p>
-          )
-          })}
+          <div>
+            {data[0]?.event.map((event :any )=> {
+              return (
+                <p>{event.date} ({event.time + " min"}) - {event.description}</p>
+              )
+            })}
           </div>
-          )
-          })}
 
           <IonButton color="success" id="btnNewEvent" onClick={() => setShowEventModal(true)}>Ajouter evenement</IonButton>
         </div>

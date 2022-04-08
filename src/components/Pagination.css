@@ -1,0 +1,27 @@
+.pagination {
+    text-align: center;
+    float: right;
+    display: block;
+    margin-top: 20px;
+    right: 10px;
+}
+
+.pagination a {
+    color: rgb(53, 53, 53);
+    float: left;
+    padding: 8px 12px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+  
+.pagination a.active {
+    background-color: #3880ff;
+    color: azure;
+    border: 1px solid #3880ff;
+}
+  
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
