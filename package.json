@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "homepage": "./",
+  "main": "public/main.js",
   "dependencies": {
+    "@capacitor-community/electron": "^4.1.0",
     "@capacitor/core": "^3.4.3",
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
@@ -17,6 +19,7 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.26.1",
+    "capacitor": "^0.5.5",
     "cross-env": "^7.0.3",
     "ionicons": "^5.4.0",
     "is-electron": "^2.2.1",
@@ -77,6 +80,7 @@
   },
   "description": "An Ionic project",
   "devDependencies": {
-    "@capacitor/cli": "2.4.7"
+    "@capacitor/cli": "2.4.7",
+    "@electron/remote": "^2.0.8"
   }
 }

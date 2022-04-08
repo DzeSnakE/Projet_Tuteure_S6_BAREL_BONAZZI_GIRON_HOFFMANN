@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar } from '@ionic/react';
-
+  IonSearchbar, IonButton, IonModal, IonItem, IonLabel, IonAvatar, isPlatform } from '@ionic/react';
 import {
   folderOutline, folderSharp,
   closeOutline, closeSharp,
@@ -13,7 +12,12 @@ import {
 
 import './FolderDetail.css';
 
+
 const FolderDetail: React.FC = () => {
+
+
+  const isElectron = isPlatform('electron');
+
   const history = useHistory();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
@@ -22,10 +26,15 @@ const FolderDetail: React.FC = () => {
 
   let { id } = useParams() as any;
 
+
   const fetchData = async () => {
+  if(isElectron){
+  const fs = window.require('fs');
+  }else{
     axios.get(`http://localhost:3000/case/events/${id}`).then((response) => {
       setAPIData(response.data);
     })
+    }
   };
 
   useEffect(() => {
@@ -35,6 +44,21 @@ const FolderDetail: React.FC = () => {
   const onDelete = () => {
     axios.delete(`http://localhost:3000/case/${id}`)
     history.push('/clients')
+  }
+
+  const addEvent = (event : React.FormEvent) =>{
+   event.preventDefault();
+   const form = event.target as HTMLFormElement;
+   const data = new FormData(form);
+   const description = data.get('description');
+   const date = data.get('date');
+   const time = data.get('time');
+    axios.post(`http://localhost:3000/event`, {
+      date: date,
+      time: time,
+      description: description,
+      cases: id,
+    })
   }
 
   const {register, handleSubmit, formState: {errors}} = useForm({
@@ -110,47 +134,7 @@ const FolderDetail: React.FC = () => {
     }
   ];
 
-  const fieldsEvent = [
-    {
-      label: "Date",
-      required: true,
-      requiredOptions: {
-        minDate: '01/01/2000'
-      },
-      props: {
-        name: "date",
-        type: "date",
-        inputmode: "datePicker",
-        placeholder: "jj/mm/AAAA"
-      }
-    },
-    {
-      label: "Durée",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 5
-      },
-      props: {
-        name: "duree",
-        type: "number",
-        placeholder: "24"
-      }
-    },
-    {
-      label: "Description",
-      required: true,
-      requiredOptions: {
-        minLength: 2,
-        maxLength: 250
-      },
-      props: {
-        name: "description",
-        type: "text",
-        placeholder: "Description de l'evenement ..."
-      }
-    }
-  ];
+
 
 console.log(data)
   return (
@@ -239,22 +223,19 @@ console.log(data)
             </IonButton>
             <h5 className="titleModal">Nouvel Evenement</h5>
 
-            <form className="formFolder">
-              {fieldsEvent.map((fieldEvent, index) => {
-                const {label, required, requiredOptions, props} = fieldEvent;
-
-                return (
-                  <IonItem key={`form_field_${index}`} lines="full">
-                    <>
-                      <IonLabel position="fixed">{label}</IonLabel>
-                      <input className="inputForm" {...props} {...register(props.name, {required, ...requiredOptions})} />
-                    </>
-
-                    {required && errors[props.name] && <IonIcon icon={alertCircleOutline} color="danger"/>}
-                  </IonItem>
-                );
-              })}
-
+            <form className="formFolder" onSubmit={addEvent}>
+                   <IonItem>
+                     <IonLabel>Date</IonLabel>
+                     <input type="date" name="date" />
+                   </IonItem>
+                    <IonItem>
+                      <IonLabel>Description</IonLabel>
+                      <input type="text" name="description" />
+                    </IonItem>
+                    <IonItem>
+                      <IonLabel>Temps</IonLabel>
+                      <input type="number" name="time" />
+                    </IonItem>
               <IonButton type="submit" className="btnSubmit">Ajouter</IonButton>
             </form>
           </IonContent>
