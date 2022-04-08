@@ -37,4 +37,10 @@ Mobile : ```npm run ionic:build``` and ```npm run ionic:start```
 
 Back-End : ```npm run backend:build``` and ```npm run backend:start```
 
-Electron with same build : ```ionic build``` and ```ionic cap sync``` and ```ionic serve``` and ```electron .```
+Electron with same build : ```ionic build```, ```ionic cap sync```, ```ionic serve``` and ```electron .```
+
+#
+
+### ✨ Léger Retard
+
+Veuillez nous excuser, le léger retard est dû à des soucis de merge.
