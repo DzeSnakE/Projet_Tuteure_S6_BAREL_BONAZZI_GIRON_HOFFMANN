@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {format, parseISO} from 'date-fns';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
   IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
 
@@ -74,8 +75,6 @@ const Client: React.FC = () => {
     mode: "onTouched",
     reValidateMode: "onChange"
   });
-
-  const date = Date.now();
 
   const fields = [
     {

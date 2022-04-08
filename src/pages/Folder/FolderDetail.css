@@ -23,6 +23,14 @@
     margin-top: 50px;
 }
 
+.inputEventFormDate {
+    margin-right: 32%;
+}
+
+.inputEventForm {
+    margin-right: 15%;
+}
+
 .modalSubtitle {
     font-weight: bold;
 }
