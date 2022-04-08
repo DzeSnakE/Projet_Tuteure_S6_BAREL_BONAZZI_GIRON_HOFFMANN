@@ -81,3 +81,15 @@ td {
 .formFolder {
     margin-top: 50px;
 }
+
+.inputForm {
+    height: 30px;
+    border-radius: 4px;
+    margin: 40px 0px 40px 5px;
+}
+
+.selectForm {
+    height: 30px;
+    border-radius: 4px;
+    margin: 40px 0px 40px 8px;
+}

@@ -214,9 +214,9 @@ const Folder: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSearch?.map((data: any, index: number) => {
+            {dataSearch.map((data: any, index: number) => {
               return (
-                <tr>
+                <tr key={data.id}>
                   <td id="code">{data.code}</td>
                   <td id="statut">{data.status ? 'Clôturé':'En cours'}</td>
                   <td id="clients"> 
@@ -277,14 +277,14 @@ const Folder: React.FC = () => {
               })}
               <IonItem>
                 <IonLabel position="fixed">Statut</IonLabel>
-                <select {...register("status")}>
+                <select className="selectForm" {...register("status")}>
                   <option value="en cours">en cours</option>
                   <option value="terminé">terminé</option>
                 </select>
               </IonItem>
               <IonItem>
-                <IonLabel position="fixed">Nom du client</IonLabel>
-                <select {...register("client")} onChange={refreshList} multiple={true}>
+                <IonLabel position="fixed">Client associé</IonLabel>
+                <select className="selectForm" {...register("client")} onChange={refreshList} multiple={true}>
                   <option>--sélectionnez--</option>
                   {datac && datac.length>0 && datac.map((user: any) => {
                     return (
