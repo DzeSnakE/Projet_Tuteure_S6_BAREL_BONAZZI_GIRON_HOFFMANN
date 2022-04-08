@@ -200,9 +200,9 @@ const Client: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSearch?.map((data: any, index: number) => {
+            {dataSearch.map((data: any, index: number) => {
               return (
-                <tr>
+                <tr key={data.id}>
                   <td id="name">{data.lastName + " " + data.firstName}</td>
                   <td id="affairs">
                     {data.cases.map((caseData: any) => {
