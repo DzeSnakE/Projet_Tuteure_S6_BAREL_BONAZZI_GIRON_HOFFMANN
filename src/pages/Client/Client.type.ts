@@ -5,5 +5,5 @@ export default interface ClientData {
     firstName: string,
     birthDate: string,
     address: string,
-    inscription: string
+    createdAt: string
 }

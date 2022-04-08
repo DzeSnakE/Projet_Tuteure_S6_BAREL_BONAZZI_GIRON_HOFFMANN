@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonButton, IonModal, IonItem, IonLabel, useIonAlert } from '@ionic/react';
+  IonButton, IonModal, IonItem, IonLabel, useIonAlert, isPlatform } from '@ionic/react';
 
 import {
   eyeOutline, eyeSharp,
@@ -19,6 +19,9 @@ import ModalEditClient from "../../components/ModalEditClient";
 import './Client.css';
 
 const Client: React.FC = () => {
+
+  const isElectron = isPlatform('electron');
+
   const [APIData, setAPIData] = useState<any[]>([]);
   const [selectedClient, setSelectedClient] = useState<clientData>();
   const [activeFilter, setActiveFilter] = useState<string>("");
@@ -32,13 +35,35 @@ const Client: React.FC = () => {
   let { id } = useParams() as any;
 
   const fetchData = async () => {
+    if(isElectron){
+      fetch('clients.json'
+          ,{
+            headers : {
+              'Content-Type': 'application/json;charset=utf-8',
+              'Accept': 'application/json'
+            }
+          }).then(function(response){
+            console.log(response)
+            return response.json();
+          }).then(function(data) {
+            console.log(data);
+            setAPIData(data)
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }else{
     axios.get('http://localhost:3000/client/all/case').then((response) => {
         setAPIData(response.data);
     }).then(() => getData())
+    }
   };
 
   useEffect(()=>{
+  if(isElectron){
+   fetchData()
+  } else {
     fetchData()
+    }
   },[isOpen, isEdit, setAPIData])
 
   const setData = (data: { id: any; firstName: string; lastName: string; address: string; birthDate: string; }) => {
@@ -51,10 +76,28 @@ const Client: React.FC = () => {
   }
 
   const getData = () => {
+      if(isElectron){
+        fetch('clients.json'
+            ,{
+              headers : {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Accept': 'application/json'
+              }
+            }).then(function(response){
+              console.log(response)
+              return response.json();
+            }).then(function(data) {
+              console.log(data);
+              setAPIData(data)
+        }).catch(function (error) {
+          console.log(error);
+        });
+      }else{
     axios.get('http://localhost:3000/client/all/case')
     .then((getData) => {
         setAPIData(getData.data);
     })
+    }
   }
 
   const onDelete = (id: any) => {
@@ -69,6 +112,8 @@ const Client: React.FC = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = APIData.slice(indexOfFirstPost, indexOfLastPost)
   const paginate = (pageNumbers:any) => setCurrentPage(pageNumbers)
+
+
 
   const {register, handleSubmit, reset, formState: {errors}} = useForm({
     mode: "onTouched",
@@ -149,12 +194,12 @@ const Client: React.FC = () => {
     axios.post('http://localhost:3000/client', data)
     .then(() => {
         getData();
-        window.location.reload();
     })
     .catch((error) => {
         console.log(error);
     })
     e.target.reset();
+    window.location.reload();
   }
 
   function modClient(client: any) {
@@ -172,10 +217,94 @@ const Client: React.FC = () => {
   }
 
   let dataSearch = APIData.filter(item => {
+  if(isElectron){
+      return Object.keys(item).some(key =>
+        item["lastName"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
+      )
+  }else{
     return Object.keys(item).some(key =>
       item["lastName"].toString().toLowerCase().includes(activeFilter.toString().toLowerCase())
     )
+    }
   });
+
+
+  let codeClient : any
+  if(isElectron){
+  codeClient = <tbody>
+                           {dataSearch?.map((data: any) => {
+                             return (
+                               <tr key={data.id}>
+                                 <td id="name">{data.lastName + " " + data.firstName}</td>
+                                 <td id="address">/</td>
+                                 <td id="actions">
+                                   <Link to={'/clients/' + data.id}>
+                                     <IonButton id="eyeButton" color="primary" size="small">
+                                       <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                                     </IonButton>
+                                   </Link>
+
+                                   <IonButton  onClick={() => modClient(data)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                                   <IonButton onClick={() => message({
+                                     header: "Supprimer un client",
+                                     message: "Voulez-vous vraiment supprimer ce client ?",
+                                     buttons: [
+                                       {text: 'Annuler', role: 'cancel'},
+                                       {text: 'Confirmer', handler: () => onDelete(data.id)}
+                                     ]
+                                     })
+                                     } id="trashButton" color="danger" size="small">
+                                       <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
+                                   </IonButton>
+                                 </td>
+                               </tr>
+                             )
+                           })}
+                         </tbody>;
+  } else {
+  codeClient = <tbody>
+                           {dataSearch?.map((data: any) => {
+                             return (
+                               <tr key={data.id}>
+                                 <td id="name">{data.lastName + " " + data.firstName}</td>
+                                 <td id="affairs">
+                                 <td id="affairs">
+                                                     {data.cases.map((caseData: any) => {
+                                                       return (
+                                                         <div>
+                                                           <p>{caseData.code}</p>
+                                                         </div>
+                                                       )
+                                                     })}
+                                                   </td>
+                                 </td>
+                                 <td id="actions">
+                                   <Link to={'/clients/' + data.id}>
+                                     <IonButton id="eyeButton" color="primary" size="small">
+                                       <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
+                                     </IonButton>
+                                   </Link>
+
+                                   <IonButton  onClick={() => modClient(data)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
+                                   <IonButton onClick={() => message({
+                                     header: "Supprimer un client",
+                                     message: "Voulez-vous vraiment supprimer ce client ?",
+                                     buttons: [
+                                       {text: 'Annuler', role: 'cancel'},
+                                       {text: 'Confirmer', handler: () => onDelete(data.id)}
+                                     ]
+                                     })
+                                     } id="trashButton" color="danger" size="small">
+                                       <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
+                                   </IonButton>
+                                 </td>
+                               </tr>
+                             )
+                           })}
+                         </tbody>
+  }
+  console.log(codeClient)
+
 
   return (
     <IonPage>
@@ -200,44 +329,7 @@ const Client: React.FC = () => {
               <th id="headActions">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {dataSearch && dataSearch.length>0 && dataSearch.map((data: any, index: number) => {
-              return (
-                <tr>
-                  <td id="name">{data.lastName + " " + data.firstName}</td>
-                  <td id="affairs">
-                    {data.cases.map((caseData: any) => {
-                      return (
-                        <div>
-                          <p>{caseData.code}</p>
-                        </div>
-                      )
-                    })}
-                  </td>
-                  <td id="actions">
-                    <Link to={'/clients/' + data.id}>
-                      <IonButton id="eyeButton" color="primary" size="small">
-                        <IonIcon id="eyeIcon" slot="icon-only" ios={eyeOutline} md={eyeSharp} />
-                      </IonButton>
-                    </Link>
-
-                    <IonButton  onClick={() => modClient(data)} id="createButton" color="warning" size="small"><IonIcon id="createIcon" slot="icon-only" ios={createOutline} md={createSharp} /></IonButton>
-                    <IonButton onClick={() => message({
-                      header: "Supprimer un client",
-                      message: "Voulez-vous vraiment supprimer ce client ?",
-                      buttons: [
-                        {text: 'Annuler', role: 'cancel'},
-                        {text: 'Confirmer', handler: () => onDelete(data.id)} 
-                      ]
-                      })
-                      } id="trashButton" color="danger" size="small">
-                        <IonIcon id="trashIcon" slot="icon-only" ios={trashOutline} md={trashSharp} />
-                    </IonButton> 
-                  </td>
-                </tr> 
-              )
-            })}
-          </tbody>
+          {codeClient}
         </table> 
 
         <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)}>

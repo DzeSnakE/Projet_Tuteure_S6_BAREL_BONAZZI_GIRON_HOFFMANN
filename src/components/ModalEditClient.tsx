@@ -60,7 +60,7 @@ const ModalEditClient = (props: ModalProps) => {
         firstName: client.firstName,
         address: client.address,
         birthDate: client.birthDate,
-        inscription: client.inscription
+        createdAt: client.createdAt
     });
 
     const handleChange = (e:any, inputName: string) => {
@@ -75,7 +75,7 @@ const ModalEditClient = (props: ModalProps) => {
             "firstName":states.firstName,
             "address":states.address,
             "birthDate":states.birthDate,
-            "inscription":states.inscription
+            "createdAt":states.createdAt
         }
 
         if (APIData) {
@@ -159,4 +159,5 @@ const ModalEditClient = (props: ModalProps) => {
         </IonModal>
     )
 }
+
 export default ModalEditClient;

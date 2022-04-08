@@ -6,7 +6,14 @@
   "main": "public/main.js",
   "dependencies": {
     "@capacitor-community/electron": "^4.1.0",
-    "@capacitor/core": "^3.4.3",
+    "@capacitor/android": "^3.4.3",
+    "@capacitor/app": "1.1.1",
+    "@capacitor/core": "3.4.3",
+    "@capacitor/electron": "2.5.0",
+    "@capacitor/haptics": "1.1.4",
+    "@capacitor/keyboard": "1.2.2",
+    "@capacitor/status-bar": "1.0.8",
+    "@electron/remote": "^2.0.8",
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
     "@testing-library/jest-dom": "^5.11.9",
@@ -19,7 +26,6 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.26.1",
-    "capacitor": "^0.5.5",
     "cross-env": "^7.0.3",
     "ionicons": "^5.4.0",
     "is-electron": "^2.2.1",
@@ -54,7 +60,7 @@
     "backend:build": "cd electron && npm install",
     "backend:start": "npm --prefix ./Back-End run start",
     "electron:start": "cd electron && cross-env REACT_APP_BUILD_TYPE=electron npm run electron:start",
-    "electron:build": "cd electron && ionic buildw && ionic cap copy",
+    "electron:build": "cd electron && ionic build && ionic cap copy",
     "mobile:start": "cross-env REACT_APP_BUILD_TYPE=mobile ionic serve",
     "mobile:build": "npm install && ionic build",
     "web:start": "cross-env REACT_APP_BUILD_TYPE=web npm start",
@@ -80,7 +86,6 @@
   },
   "description": "An Ionic project",
   "devDependencies": {
-    "@capacitor/cli": "2.4.7",
-    "@electron/remote": "^2.0.8"
+    "@capacitor/cli": "3.4.3"
   }
 }

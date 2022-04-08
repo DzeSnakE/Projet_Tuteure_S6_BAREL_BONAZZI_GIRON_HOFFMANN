@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonButton, useIonAlert } from '@ionic/react';
+import { IonButtons, IonIcon, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
+  IonButton, useIonAlert, isPlatform } from '@ionic/react';
 
 import {
   personOutline, personSharp
@@ -14,6 +14,8 @@ import ModalEditClient from "../../components/ModalEditClient";
 import './ClientDetail.css';
 
 const ClientDetail: React.FC = () => {
+
+  const isElectron = isPlatform('electron');
   const history = useHistory();
   const [selectedClient, setSelectedClient] = useState<clientData>();
   const [message] = useIonAlert();
@@ -22,7 +24,7 @@ const ClientDetail: React.FC = () => {
   let { id } = useParams() as any;
 
   const [data, setAPIData] = useState([] as any);
-  
+
   const fetchData = async (id: any) => {
     axios.get(`http://localhost:3000/client/case/${id}`).then((response) => {
       setAPIData(response.data);
@@ -102,7 +104,7 @@ const ClientDetail: React.FC = () => {
       }
     },
   ];
-  console.log(data)
+
   return (
     <IonPage>
       <IonHeader>
@@ -123,11 +125,11 @@ const ClientDetail: React.FC = () => {
             message: "Voulez-vous vraiment supprimer ce client ?",
             buttons: [
               {text: 'Annuler', role: 'cancel'},
-              {text: 'Confirmer', handler: () => onDelete()} 
+              {text: 'Confirmer', handler: () => onDelete()}
             ]
             })
             } id="btnDeleteClient" color="danger"> Supprimer
-          </IonButton> 
+          </IonButton>
 
           <IonButton onClick={() => modClient(data[0])} id="btnUpdateClient">Modifier</IonButton>
         </div>
@@ -144,12 +146,13 @@ const ClientDetail: React.FC = () => {
 
           <h3 className="modalSubtitle">Dossiers associés</h3>
           <h4><div>{data[0]?.cases.map((cases : any)=>{
-          return(
-            <p>
-              <Link to={'/dossiers/' + cases.id}>{cases.code}</Link>
-            </p>          )
-
-          })}</div>
+            return (
+              <p>
+                <Link to={'/dossiers/' + cases.id}>{cases.code}</Link>
+              </p>
+            )
+            })}
+          </div>
           </h4>
         </div>
 
@@ -160,7 +163,7 @@ const ClientDetail: React.FC = () => {
                 setIsOpen={() => setIsEdit(false)}
             />
           ) : null}
-      </IonContent>              
+      </IonContent>
     </IonPage>
   );
 };
