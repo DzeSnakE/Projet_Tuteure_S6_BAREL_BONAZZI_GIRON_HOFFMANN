@@ -1,0 +1,95 @@
+#titlePageFolder {
+    margin: 20px 0px 0px 10px;
+}
+
+#sortByFolder {
+    margin: 20px 0px 0px 10px;
+    height: 40px;
+    border-radius: 3px;
+}
+
+#searchBar {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border: 2px solid #3880ff;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px;
+}
+
+thead {
+    border: 2px solid #3880ff;
+    background: #3880ff;
+    color: azure;
+    padding: 8px;
+}
+
+td {
+    border: 2px solid #3880ff;
+    padding: 8px;
+}
+
+#headCode, #headStatut {
+    width: 20%;
+    border-right: 2px solid azure;
+    padding: 8px;
+}
+
+
+#headClients {
+    width: 40%;
+    border-right: 2px solid azure;
+    padding: 8px;
+}
+
+#headActions {
+    width: 20%;
+    padding: 8px;
+}
+
+#closeModal {
+    margin: 15px;
+    float: right;
+}
+
+.titleModal {
+    margin: 15px;
+}
+
+.modalButtons {
+    float: right;
+    margin: 10px;
+}
+
+.formModal {
+    margin-top: 20px;
+}
+
+#btnSubmit {
+    float: right;
+    margin: 20px;
+}
+
+#btnNewFolder {
+    margin-top: 20px;
+}
+
+.formFolder {
+    margin-top: 50px;
+}
+
+.inputForm {
+    height: 30px;
+    border-radius: 4px;
+    margin: 40px 0px 40px 5px;
+}
+
+.selectForm {
+    height: 30px;
+    border-radius: 4px;
+    margin: 40px 0px 40px 8px;
+}

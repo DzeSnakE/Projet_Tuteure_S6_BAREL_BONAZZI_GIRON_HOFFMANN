@@ -1,0 +1,64 @@
+#titlePageClient, #labelSearch {
+    margin: 20px 0px 0px 10px;
+}
+
+table {
+    width: 100%;
+    border: 2px solid #3880ff;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px;
+}
+
+thead {
+    border: 2px solid #3880ff;
+    background: #3880ff;
+    color: azure;
+    padding: 8px;
+}
+
+td {
+    border: 2px solid #3880ff;
+    padding: 8px;
+}
+
+#headName {
+    width: 30%;
+    border-right: 2px solid azure;
+    padding: 8px;
+}
+
+#headAffairs {
+    width: 50%;
+    border-right: 2px solid azure;
+    padding: 8px;
+}
+
+#headActions {
+    width: 20%;
+    padding: 8px;
+}
+
+#closeModal {
+    margin: 15px;
+    float: right;
+}
+
+.titleModal {
+    margin: 20px;
+}
+
+.modalButtons {
+    float: right;
+    margin: 10px;
+}
+
+#btnSubmit {
+    float: right;
+    margin: 20px;
+}
+
+#btnNewClient {
+    margin-top: 20px;
+}
