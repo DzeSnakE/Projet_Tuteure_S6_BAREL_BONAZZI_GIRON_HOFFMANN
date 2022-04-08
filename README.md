@@ -41,6 +41,12 @@ Electron with same build : ```ionic build```, ```ionic cap sync```, ```ionic ser
 
 #
 
+### 🧩 Branche electronv2
+
+La version qui a été présentée à la soutenance est présente dans la branche electron-v2.
+
+#
+
 ### ✨ Léger Retard
 
 Veuillez nous excuser, le léger retard est dû à des soucis de merge.
